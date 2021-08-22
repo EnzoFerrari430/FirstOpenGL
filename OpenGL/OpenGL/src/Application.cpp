@@ -32,7 +32,7 @@ int main(void)
 {
 	GLFWwindow* window;
 
-	/* Initialize the library */
+	//1.初始化glfw库
 	if (!glfwInit())
 		return -1;
 
@@ -45,6 +45,7 @@ int main(void)
 	//}
 
 
+	//2创建一个window
 	//创建一个窗口以及关联的opengl或opengl es环境(OpenGL or OpenGL ES context)
 	//大部分的控制窗口及其环境选项都是通过窗口提示（window hints）指定的
 	/* Create a windowed mode window and its OpenGL context */
@@ -57,7 +58,8 @@ int main(void)
 		return -1;
 	}
 
-	//该函数在调用的线程上设置当前指定窗口的OpenGL或OpenGL ES上下文
+	//3把指定的窗口设置为当前调用线程的上下文
+	//说白了就是对当前窗口调用OpenGL OpenGL ES  API
 	/* Make the window's context current */
 	glfwMakeContextCurrent(window);
 
@@ -69,11 +71,12 @@ int main(void)
 	//获取现在OpenGL版本
 	std::cout << glGetString(GL_VERSION) << std::endl;
 
-	//判断当前窗口的关闭标志是否为true
+	//4循环判断当前窗口是否需要关闭
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
 		//微软实现的自带的gl库
+		//4.1清除缓冲
 		/* Render here */
 		glClear(GL_COLOR_BUFFER_BIT);
 
@@ -82,16 +85,17 @@ int main(void)
 		glBegin(GL_TRIANGLES);
 		//确定3个顶点
 		glVertex2f(-0.5f, -0.5f);
-		glVertex2f(0.0f, 0.5f);
-		glVertex2f(0.5f, -0.5f);
+		glVertex2f( 0.0f,  0.5f);
+		glVertex2f( 0.5f, -0.5f);
 		glEnd();
 
-		//使用OpenGL或者OpenGL ES进行渲染时，该函数交换指定窗口的前后缓冲区
+		//4.2交换前后缓冲:
+		//双缓冲 前缓冲：屏幕上显示的内容  后缓冲：下一帧的内容
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
 
-		//该函数只处理已经在事件队列中的事件，然后立即返回
-		//处理事件会导致与这些事件相关的窗口和输入回调函数被调用
+		//4.3事件处理  轮询方法
+		//通常在缓冲区交换后没帧执行一次
 		/* Poll for and process events */
 		glfwPollEvents();
 	}
