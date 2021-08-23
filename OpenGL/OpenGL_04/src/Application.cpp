@@ -12,13 +12,108 @@ OpenGL实际操作起来就是一个state machine状态机
 然后给我画一个三角形
 
 
-绘制流程记为X
+绘制流程记为X、
+
+shader（着色器）是运行在GPU上的小程序
+这些小程序为图形渲染管线的某个特定部分而运行
 
 */
 
 #include <gl/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <string>
+
+
+/*************************************************
+Function:		生成一个shader对象
+
+Description:    生成一个shader对象
+
+Input:          type：指定要生成的shader类型
+				source：指定shader对象要装载的源码
+
+Output:			无
+
+Return:         生成的shader对象的id
+
+Date：			2021-8-22
+
+Author：			ENZO
+*************************************************/
+static unsigned int compileShader(unsigned int type, const std::string& source)
+{
+	//1.创建一个shader对象
+	unsigned int id = glCreateShader(type);
+
+	//2.设置shader的sourceCode
+	/*
+	将GLSL源码设置到shader中，任何先前保存在shader对象中的源码都将被替换
+	如果源码字符串以NULL结尾，则长度参数可以设置为NULL
+	*/
+	const char* src = source.c_str();
+	glShaderSource(id, 1, &src, nullptr);
+	//3.编译保存在shader中的sourceCode
+	glCompileShader(id);
+
+	//TODO: ERROR handling
+	//4.查看着色器编译状态是否成功
+	int result;
+	glGetShaderiv(id, GL_COMPILE_STATUS, &result);
+	if (GL_FALSE == result)
+	{
+		//查看错误原因
+		int length;
+		glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
+		//alloca：分配的内存在局部函数的上下文中，当调用的函数返回的时候，会自动释放
+		char *message = (char*)alloca(length * sizeof(char));
+		glGetShaderInfoLog(id, length, &length, message);
+		std::cout << "Failed to compile " << (type == GL_VERTEX_SHADER ? "vertex" : "fragment") \
+			<< " shader!" << std::endl;
+		std::cout << message << std::endl;
+
+		//删除shader
+		glDeleteShader(id);
+		return 0;
+
+	}
+
+	return id;
+}
+
+static int createShader(const std::string& vertexShader, const std::string& fragmentShader)
+{
+	//1.创建一个空的program对象
+	unsigned int program = glCreateProgram();
+
+	//2.创建shader对象
+	unsigned int vs = compileShader(GL_VERTEX_SHADER, vertexShader);
+	unsigned int fs = compileShader(GL_FRAGMENT_SHADER, fragmentShader);
+
+	//3.将shader对象链接到program对象中
+	glAttachShader(program, vs);
+	glAttachShader(program, fs);
+
+	//4.创建一个可执行的program
+	/*
+	If any shader objects of type GL_VERTEX_SHADER are attached to program, 
+	they will be used to create an executable that will run on the programmable vertex processor. 
+	If any shader objects of type GL_GEOMETRY_SHADER are attached to program, 
+	they will be used to create an executable that will run on the programmable geometry processor. 
+	If any shader objects of type GL_FRAGMENT_SHADER are attached to program, 
+	they will be used to create an executable that will run on the programmable fragment processor.
+	*/
+	glLinkProgram(program);
+
+	//5.检查program对象中的可执行文件(Shader)能否在当前的OpenGL环境下执行
+	glValidateProgram(program);
+
+	//6.删除中间生成的vertexShader和fragmentShader
+	glDeleteShader(vs);
+	glDeleteShader(fs);
+
+	return 0;
+}
 
 int main()
 {
@@ -99,6 +194,34 @@ int main()
 	*/
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
 
+	//X:5生成shader
+	//X:5.1  顶点着色器源码
+	std::string vertexShader =
+		"#version 330 core\n"
+		"\n"
+		"layout(location = 0) in vec2 position;\n"
+		"\n"
+		"void main()\n"
+		"{\n"
+		"	gl_Position = vec4(position.x, position.y, 0.0, 1.0);\n"
+		"}\n";
+
+	//"layout(location = 0) out vec4 color;\n"
+	// TODO: 这个颜色为啥还是白色的！！！！！！！
+	std::string fragmentShader =
+		"#version 330 core\n"
+		"\n"
+		"out vec4 color;\n"
+		"\n"
+		"void main()\n"
+		"{\n"
+		"	color = vec4(0.5f, 0.0f, 0.0f, 1.0f);\n"
+		"}\n";
+	//X:5.2生成shader
+	unsigned int shader = createShader(vertexShader, fragmentShader);
+
+	//X:5.3使用program对象作为当前渲染的一部分
+	glUseProgram(shader);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -117,7 +240,7 @@ int main()
 		glfwPollEvents();
 	}
 
-
+	glDeleteProgram(shader);
 
 	glfwTerminate();
 	return 0;
