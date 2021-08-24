@@ -112,7 +112,7 @@ static int createShader(const std::string& vertexShader, const std::string& frag
 	glDeleteShader(vs);
 	glDeleteShader(fs);
 
-	return 0;
+	return program;
 }
 
 int main()
