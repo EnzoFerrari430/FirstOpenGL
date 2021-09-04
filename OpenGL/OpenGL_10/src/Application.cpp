@@ -13,6 +13,22 @@ p11:
 	而且，它uniform可以被着色器程序的任意着色器在任意阶段访问
 	再次，无论uniform值设置成什么，uniform会一直保存它们的数据，直到它们被重置或更新
 
+
+p12:
+	使用Vertex Array Object 顶点数组对象
+
+	本质上，我们绑定的缓冲数据，VBO IBO其实都会保存在一个顶点数组对象中
+
+	之前一直没有提及是因为我们使用的是OpenGL的兼容模式
+	OpenGL的兼容模式，为我们创建了一个默认的顶点数组对象，  我们绑定的VBO IBO都绑定在了这个默认的顶点数组对象中
+
+	OpenGL的核心模式是没有默认的顶点数组对象
+
+
+	顶点数组对象保存以下东西：
+	glEnableVertexAttribArray和glDisableVertexAttribArray的调用。
+	通过glVertexAttribPointer设置的顶点属性配置。
+	通过glVertexAttribPointer调用进行的顶点缓冲对象与顶点属性链接。
 */
 
 #include <gl/glew.h>
@@ -29,6 +45,7 @@ glGetError获取一个错误信息，并移除队列
 所以 不定期检测会导致不知道某个函数是否调用错误，及ErrorCode
 */
 
+#pragma region 错误处理
 #define ASSERT(x) if (!(x)) __debugbreak()
 //缺陷：要考虑作用域的问题
 #define GLCall(x) GLClearError();\
@@ -50,7 +67,19 @@ static bool GLLogCall(const char* function, const char* file, int line)
 	}
 	return true;
 }
+#pragma endregion
 
+
+#pragma region glfw库 错误处理
+void glfwErrorHandle(int errCode, const char* errMsg)
+{
+	std::cout << "[glfw error] (" << errCode << ") :" << errMsg << std::endl;
+}
+#pragma endregion
+
+
+
+#pragma region 解析着色器程序
 struct shaderProgramSource
 {
 	std::string vertexSource;
@@ -139,15 +168,23 @@ static int createShader(const std::string& vertexShader, const std::string& frag
 
 	return program;
 }
+#pragma endregion
 
 int main()
 {
 	GLFWwindow* window;
 
+	glfwSetErrorCallback(glfwErrorHandle);
+
 	if (!glfwInit())
 	{
 		return -1;
 	}
+
+	//使用OpenGL核心模式
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);//默认运行的是兼容模式
 
 	window = glfwCreateWindow(640, 480, "EnzoWindow", NULL, NULL);
 	if (!window)
@@ -182,18 +219,27 @@ int main()
 		2, 3, 0  //第二个三角形的3个顶点索引
 	};
 
+
+	//生成顶点数组对象
+	unsigned int vao;
+	GLCall(glGenVertexArrays(1, &vao));
+	GLCall(glBindVertexArray(vao));//绑定VAO
+
+
 	unsigned int buffer;
 	GLCall(glGenBuffers(1, &buffer));
 	GLCall(glBindBuffer(GL_ARRAY_BUFFER, buffer));
 	GLCall(glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), positions, GL_STATIC_DRAW));
 	
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
+	GLCall(glEnableVertexAttribArray(0));
+	//核心模式下，在没有顶点数组对象（Vertex arrays object）的情况下 glVertexAttribPointer会报错 错误码1282
+	//实际上，vertex buffer 和 vertex buffer的layout都是绑定在一个顶点数组对象中
+	GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0));
 
 	unsigned int ibo;
-	glGenBuffers(1, &ibo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * 6, indices, GL_STATIC_DRAW);
+	GLCall(glGenBuffers(1, &ibo));
+	GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
+	GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * 6, indices, GL_STATIC_DRAW));
 
 
 
@@ -211,10 +257,13 @@ int main()
 	//1.找到uniform ID,失败返回-1
 	GLCall(int location = glGetUniformLocation(shader, "u_Color"));
 	ASSERT(location != -1);
-
-	//2.设置uniform变量
-	GLCall(glUniform4f(location, 0.2f, 0.3f, 0.8f, 1.0f));
 	///////////////////////////////////////////////////
+
+	//解绑,在渲染的时候再绑定上
+	GLCall(glUseProgram(0));
+	GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
+	GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+	GLCall(glBindVertexArray(0));
 
 	//动态变化颜色
 	float r = 0.0f;
@@ -224,14 +273,31 @@ int main()
 	{
 		glClear(GL_COLOR_BUFFER_BIT);
 
-
-
+		/*
+		//不使用顶点数组对象（vertex array object）的话
+		GLCall(glUseProgram(shader));
 		GLCall(glUniform4f(location, r, 0.3f, 0.8f, 1.0f));
+		GLCall(glBindBuffer(GL_ARRAY_BUFFER, buffer));
+		GLCall(glEnableVertexAttribArray(0));
+		GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0));
+
+		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
+		*/
+
+		
+		//使用顶点数据对象
+		GLCall(glUseProgram(shader));
+		GLCall(glUniform4f(location, r, 0.3f, 0.8f, 1.0f));
+		GLCall(glBindVertexArray(vao));
+		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
 
 		//在glClear和glfwSwapBuffers之间告知OpenGL状态机要绘制的图形
 		//glDrawElements偏移量是字节数 单位是byte所以下一个索引的步长是sizeof(unsigned int)
 		//GLCall(glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (const void*)(sizeof(unsigned int) * 3)));
 		GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+
+		GLCall(glBindVertexArray(0));
+
 
 		if (r > 1.0f)
 			increment = -0.05f;
