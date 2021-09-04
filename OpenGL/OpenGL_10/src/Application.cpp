@@ -6,6 +6,13 @@ p10:
 
 	本节封装GLGetError来排查调用异常问题
 
+p11:
+	GLSL:uniform
+	uniform是一种从CPU中的应用向GPU中的着色器发送数据的方式，但是和顶点属性有些不同。
+	首先，uniform是全局的(GLobal)。全局表示uniform变量必须在每个着色器程序对象(glUseProgram函数中的着色器对象)
+	而且，它uniform可以被着色器程序的任意着色器在任意阶段访问
+	再次，无论uniform值设置成什么，uniform会一直保存它们的数据，直到它们被重置或更新
+
 */
 
 #include <gl/glew.h>
@@ -150,6 +157,8 @@ int main()
 
 	glfwMakeContextCurrent(window);
 
+	glfwSwapInterval(1);
+
 	//必须要在glew库初始化之后才可以调用glGetError
 	if (glewInit() != GLEW_OK)
 	{
@@ -194,17 +203,41 @@ int main()
 
 	unsigned int shader = createShader(source.vertexSource, source.fragmentSource);
 
-	glUseProgram(shader);
+	GLCall(glUseProgram(shader));
+
+	///////////////////////////////////////////////////
+	//p11:在程序使用着色器对象之后  可以调用uniform设置颜色
+
+	//1.找到uniform ID,失败返回-1
+	GLCall(int location = glGetUniformLocation(shader, "u_Color"));
+	ASSERT(location != -1);
+
+	//2.设置uniform变量
+	GLCall(glUniform4f(location, 0.2f, 0.3f, 0.8f, 1.0f));
+	///////////////////////////////////////////////////
+
+	//动态变化颜色
+	float r = 0.0f;
+	float increment = 0.05f;//步长
 
 	while (!glfwWindowShouldClose(window))
 	{
 		glClear(GL_COLOR_BUFFER_BIT);
 
 
+
+		GLCall(glUniform4f(location, r, 0.3f, 0.8f, 1.0f));
+
 		//在glClear和glfwSwapBuffers之间告知OpenGL状态机要绘制的图形
-		//GLClearError();
+		//glDrawElements偏移量是字节数 单位是byte所以下一个索引的步长是sizeof(unsigned int)
+		//GLCall(glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (const void*)(sizeof(unsigned int) * 3)));
 		GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
-		//ASSERT(GLLogCall());
+
+		if (r > 1.0f)
+			increment = -0.05f;
+		else if (r < 0.0f)
+			increment = 0.05f;
+		r += increment;
 
 		glfwSwapBuffers(window);
 
