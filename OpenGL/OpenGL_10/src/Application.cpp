@@ -17,10 +17,10 @@ p11:
 p12:
 	使用Vertex Array Object 顶点数组对象
 
-	本质上，我们绑定的缓冲数据，VBO IBO其实都会保存在一个顶点数组对象中
+	本质上，我们绑定的缓冲数据，VBO 会保存在一个顶点数组对象中
 
 	之前一直没有提及是因为我们使用的是OpenGL的兼容模式
-	OpenGL的兼容模式，为我们创建了一个默认的顶点数组对象，  我们绑定的VBO IBO都绑定在了这个默认的顶点数组对象中
+	OpenGL的兼容模式，为我们创建了一个默认的顶点数组对象，  我们绑定的VBO 绑定在了这个默认的顶点数组对象中
 
 	OpenGL的核心模式是没有默认的顶点数组对象
 
@@ -76,7 +76,6 @@ void glfwErrorHandle(int errCode, const char* errMsg)
 	std::cout << "[glfw error] (" << errCode << ") :" << errMsg << std::endl;
 }
 #pragma endregion
-
 
 
 #pragma region 解析着色器程序
@@ -146,9 +145,14 @@ static unsigned int compileShader(unsigned int type, const std::string& source)
 		return 0;
 
 	}
+	if (true)
+	{
+
+	}
 
 	return id;
 }
+
 
 static int createShader(const std::string& vertexShader, const std::string& fragmentShader)
 {
