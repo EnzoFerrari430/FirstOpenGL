@@ -7,111 +7,18 @@ p13:
 #include <gl/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include <string>
-
-#include <fstream>//读取文件
-#include <sstream>//字符串流
 
 #include "Renderer.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
+#include "Shader.h"
 
 
 #pragma region glfw库 错误处理
 void glfwErrorHandle(int errCode, const char* errMsg)
 {
 	std::cout << "[glfw error] (" << errCode << ") :" << errMsg << std::endl;
-}
-#pragma endregion
-
-
-#pragma region 解析着色器程序
-struct shaderProgramSource
-{
-	std::string vertexSource;
-	std::string fragmentSource;
-};
-
-//因为这里只是一个简单OpenGL教程，所以使用C++风格读取文件
-//C++风格读取文件会比C风格的API慢一些
-static shaderProgramSource parseShader(const std::string& filepath)
-{
-	std::ifstream stream(filepath);
-
-	enum class shaderType
-	{
-		NONE = -1, VERTEX = 0, FRAGMENT = 1
-	};
-
-	std::string line;
-	std::stringstream ss[2];//2个字符串流 一个用来保存vertexShader 一个用来保存fragmentShader
-	shaderType type = shaderType::NONE;
-	while (getline(stream, line))
-	{
-		if (line.find("#shader") != std::string::npos)
-		{
-			if (line.find("vertex") != std::string::npos)
-				type = shaderType::VERTEX;
-			else if (line.find("fragment") != std::string::npos)
-				type = shaderType::FRAGMENT;
-		}
-		else
-		{
-			// TODO: type == shaderType::NONE就凉了
-			ss[(int)type] << line << "\n";
-		}
-	}
-	return { ss[0].str(), ss[1].str() };
-}
-
-static unsigned int compileShader(unsigned int type, const std::string& source)
-{
-	GLCall(unsigned int id = glCreateShader(type));
-
-	const char* src = source.c_str();
-	GLCall(glShaderSource(id, 1, &src, nullptr));
-	GLCall(glCompileShader(id));
-
-	int result;
-	GLCall(glGetShaderiv(id, GL_COMPILE_STATUS, &result));
-	if (GL_FALSE == result)
-	{
-		//查看错误原因
-		int length;
-		GLCall(glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length));
-		//alloca：分配的内存在局部函数的上下文中，当调用的函数返回的时候，会自动释放
-		char *message = (char*)alloca(length * sizeof(char));
-		GLCall(glGetShaderInfoLog(id, length, &length, message));
-		std::cout << "Failed to compile " << (type == GL_VERTEX_SHADER ? "vertex" : "fragment") \
-			<< " shader!" << std::endl;
-		std::cout << message << std::endl;
-
-		GLCall(glDeleteShader(id));
-		return 0;
-
-	}
-
-	return id;
-}
-
-static int createShader(const std::string& vertexShader, const std::string& fragmentShader)
-{
-	GLCall(unsigned int program = glCreateProgram());
-
-	unsigned int vs = compileShader(GL_VERTEX_SHADER, vertexShader);
-	unsigned int fs = compileShader(GL_FRAGMENT_SHADER, fragmentShader);
-
-	GLCall(glAttachShader(program, vs));
-	GLCall(glAttachShader(program, fs));
-	GLCall(glLinkProgram(program));
-	GLCall(glValidateProgram(program));
-
-	//6.删除中间生成的vertexShader和fragmentShader
-	GLCall(glDeleteShader(vs));
-	GLCall(glDeleteShader(fs));
-
-	return program;
 }
 #pragma endregion
 
@@ -177,27 +84,15 @@ int main()
 
 		IndexBuffer ib(indices, 6);
 
-		//X:5生成shader
-		//X:5.1  顶点着色器源码
-		shaderProgramSource source = parseShader("res/shaders/Basic.shader");
-
-		unsigned int shader = createShader(source.vertexSource, source.fragmentSource);
-
-		GLCall(glUseProgram(shader));
-
-		///////////////////////////////////////////////////
-		//p11:在程序使用着色器对象之后  可以调用uniform设置颜色
-
-		//1.找到uniform ID,失败返回-1
-		GLCall(int location = glGetUniformLocation(shader, "u_Color"));
-		ASSERT(location != -1);
-		///////////////////////////////////////////////////
+		Shader shader("res/shaders/Basic.shader");
+		shader.Bind();
+		shader.SetUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
 
 		//解绑,在渲染的时候再绑定上
-		GLCall(glUseProgram(0));
-		GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
-		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
-		GLCall(glBindVertexArray(0));
+		va.Unbind();
+		vb.Unbind();
+		ib.Unbind();
+		shader.Unbind();
 
 		//动态变化颜色
 		float r = 0.0f;
@@ -208,8 +103,8 @@ int main()
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			//使用顶点数据对象
-			GLCall(glUseProgram(shader));
-			GLCall(glUniform4f(location, r, 0.3f, 0.8f, 1.0f));
+			shader.Bind();
+			shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
 			
 			va.Bind();
 			ib.Bind();
@@ -217,8 +112,9 @@ int main()
 			///draw系列的函数都是渲染的操作 这个函数交给渲染类来处理
 			GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
 
-			GLCall(glBindVertexArray(0));
-
+			va.Unbind();
+			ib.Unbind();
+			shader.Unbind();
 
 			if (r > 1.0f)
 				increment = -0.05f;
@@ -228,11 +124,10 @@ int main()
 
 			glfwSwapBuffers(window);
 
-
 			glfwPollEvents();
 		}
 
-		glDeleteProgram(shader);
+		//离开作用域  析构 shader va vb ib
 	}
 	glfwTerminate();
 	//删除glfw上下文之后，glGetError会返回错误
