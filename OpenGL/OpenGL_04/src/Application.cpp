@@ -81,7 +81,7 @@ static unsigned int compileShader(unsigned int type, const std::string& source)
 	return id;
 }
 
-static int createShader(const std::string& vertexShader, const std::string& fragmentShader)
+static unsigned int createShader(const std::string& vertexShader, const std::string& fragmentShader)
 {
 	//1.创建一个空的program对象
 	unsigned int program = glCreateProgram();
