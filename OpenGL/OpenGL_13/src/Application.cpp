@@ -13,6 +13,7 @@ p13:
 #include "IndexBuffer.h"
 #include "VertexArray.h"
 #include "Shader.h"
+#include "VertexBufferLayout.h"
 
 
 #pragma region glfw库 错误处理
@@ -94,27 +95,27 @@ int main()
 		ib.Unbind();
 		shader.Unbind();
 
+		//创建一个Renderer类
+		Renderer renderer;
+
 		//动态变化颜色
 		float r = 0.0f;
 		float increment = 0.05f;//步长
 
 		while (!glfwWindowShouldClose(window))
 		{
-			glClear(GL_COLOR_BUFFER_BIT);
+			renderer.Clear();
 
 			//使用顶点数据对象
 			shader.Bind();
 			shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
 			
-			va.Bind();
-			ib.Bind();
+			renderer.Draw(va, ib, shader);
 
-			///draw系列的函数都是渲染的操作 这个函数交给渲染类来处理
-			GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
-
-			va.Unbind();
-			ib.Unbind();
-			shader.Unbind();
+			//p16:unBind不是必要的操作，能再调试时起作用，但是会影响性能
+			//va.Unbind();
+			//ib.Unbind();
+			//shader.Unbind();
 
 			if (r > 1.0f)
 				increment = -0.05f;
