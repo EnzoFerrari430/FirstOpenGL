@@ -13,6 +13,7 @@ p13:
 #include "IndexBuffer.h"
 #include "VertexArray.h"
 #include "Shader.h"
+#include "Texture.h"
 #include "VertexBufferLayout.h"
 
 
@@ -61,10 +62,11 @@ int main()
 	{
 		//顶点数据
 		float positions[] = {
-			-0.5f, -0.5f, // 0
-			 0.5f, -0.5f, // 1
-			 0.5f,  0.5f, // 2
-			-0.5f,  0.5f  // 3
+			//位置		  //纹理坐标
+			-0.5f, -0.5f, 0.0f, 0.0f,// 0
+			 0.5f, -0.5f, 1.0f, 0.0f,// 1
+			 0.5f,  0.5f, 1.0f, 1.0f,// 2
+			-0.5f,  0.5f, 0.0f, 1.0f// 3
 		};
 
 		//指示上面的4个顶点数据如何进行绘制
@@ -73,13 +75,17 @@ int main()
 			2, 3, 0  //第二个三角形的3个顶点索引
 		};
 
+		GLCall(glEnable(GL_BLEND));
+		GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+
 		VertexArray va;
-		VertexBuffer vb(positions, 4 * 2 * sizeof(float));
+		VertexBuffer vb(positions, 4 * 4 * sizeof(float));
 		VertexBufferLayout layout;
 		/*
 		如果有多个属性，确保在AddBuffer之前都push进去
 		在AddBuffer的时候我们要计算stride
 		*/
+		layout.Push<float>(2);
 		layout.Push<float>(2);
 		va.AddBuffer(vb, layout);
 
@@ -88,6 +94,12 @@ int main()
 		Shader shader("res/shaders/Basic.shader");
 		shader.Bind();
 		shader.SetUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
+
+		//要保证这里的SetUniform1i设置的0与上面绑定的激活纹理单元一致
+		//这样u_Texture表示的纹理采样器才能和纹理对象中保存的图片信息保持一致
+		Texture texture("res/textures/person.png");
+		texture.Bind();//绑定要纹理单元0上
+		shader.SetUniform1i("u_Texture", 0);
 
 		//解绑,在渲染的时候再绑定上
 		va.Unbind();
