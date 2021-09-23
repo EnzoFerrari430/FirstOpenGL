@@ -55,7 +55,7 @@ int main()
 	{
 		std::cout << "error" << std::endl;
 	}
-
+	
 	GLCall(std::cout << glGetString(GL_VERSION) << std::endl);
 
 	//增加作用域，让VertexBuffer IndexBuffer能再glfwTerminate之前析构
@@ -66,7 +66,7 @@ int main()
 			-0.5f, -0.5f, 0.0f, 0.0f,// 0
 			 0.5f, -0.5f, 1.0f, 0.0f,// 1
 			 0.5f,  0.5f, 1.0f, 1.0f,// 2
-			-0.5f,  0.5f, 0.0f, 1.0f// 3
+			-0.5f,  0.5f, 0.0f, 1.0f // 3
 		};
 
 		//指示上面的4个顶点数据如何进行绘制
@@ -97,7 +97,7 @@ int main()
 
 		//要保证这里的SetUniform1i设置的0与上面绑定的激活纹理单元一致
 		//这样u_Texture表示的纹理采样器才能和纹理对象中保存的图片信息保持一致
-		Texture texture("res/textures/person.png");
+		Texture texture("res/textures/MyLogo.png");
 		texture.Bind();//绑定要纹理单元0上
 		shader.SetUniform1i("u_Texture", 0);
 

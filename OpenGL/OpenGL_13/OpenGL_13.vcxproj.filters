@@ -79,5 +79,8 @@
     <Image Include="res\textures\person.png">
       <Filter>资源文件</Filter>
     </Image>
+    <Image Include="res\textures\MyLogo.png">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>

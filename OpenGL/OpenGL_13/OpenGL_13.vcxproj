@@ -149,6 +149,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\Logo.png" />
+    <Image Include="res\textures\MyLogo.png" />
     <Image Include="res\textures\person.png" />
     <Image Include="res\textures\pig.png" />
   </ItemGroup>
