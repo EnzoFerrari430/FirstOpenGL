@@ -2,6 +2,26 @@
 p13:
 	开始封装类
 	封装 vertex buffer object 和vertex index buffer
+
+p18:
+	blend 混合
+	混合就是将我们的源色和我们的目标色以某种混合生成特效的技术
+	混合操作只能在RGBA模式下进行
+	混合的关键作用的a值上将源色和目标色按照给定的比率进行混合，以达到不同程度的透明度。
+	a值为0则完全透明 a值为1则完全不透明。
+
+	源色 source color：fragment shader中输出的最终颜色
+	目标色 target color: fragment shader输出的区域的颜色
+
+	默认混合值是 源色1即 GL_ONE 目标色0 GL_ZERO
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);// 是最常使用的
+	
+	例子:
+	R = (src.r * 0) + (dst.r * (1 - 0)) = dst.r;
+	G = (src.g * 0) + (dst.g * (1 - 0)) = dst.g;
+	B = (src.b * 0) + (dst.b * (1 - 0)) = dst.b;
+	A = (src.a * 0) + (dst.a * (1 - 0)) = dst.a;
 */
 
 #include <gl/glew.h>
@@ -75,7 +95,9 @@ int main()
 			2, 3, 0  //第二个三角形的3个顶点索引
 		};
 
+		//blend混合
 		GLCall(glEnable(GL_BLEND));
+		//GLCall(glBlendFunc(GL_ONE, GL_ZERO));
 		GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
 		VertexArray va;
@@ -116,6 +138,7 @@ int main()
 
 		while (!glfwWindowShouldClose(window))
 		{
+			renderer.setBGColor(0.2f, 0.3f, 0.3f, 1.0f);
 			renderer.Clear();
 
 			//使用顶点数据对象

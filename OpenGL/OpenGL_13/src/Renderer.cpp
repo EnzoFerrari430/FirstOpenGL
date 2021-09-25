@@ -19,6 +19,11 @@ bool GLLogCall(const char* function, const char* file, int line)
 	return true;
 }
 
+void Renderer::setBGColor(float r, float g, float b, float a) const
+{
+	glClearColor(r, g, b, a);
+}
+
 void Renderer::Clear() const
 {
 	glClear(GL_COLOR_BUFFER_BIT);
