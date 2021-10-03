@@ -36,12 +36,30 @@ p18:
 #include "Texture.h"
 #include "VertexBufferLayout.h"
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 #pragma region glfw库 错误处理
 void glfwErrorHandle(int errCode, const char* errMsg)
 {
 	std::cout << "[glfw error] (" << errCode << ") :" << errMsg << std::endl;
 }
+#pragma endregion
+
+#pragma region 打印数据
+//打印矩阵数据
+void printMatrix4(const glm::mat4 matrix)
+{
+	for (int i = 0; i < 4; ++i)
+	{
+		for (int j = 0; j < 4; ++j)
+		{
+			std::cout << matrix[j][i] << "\t\t";
+		}
+		std::cout << std::endl;
+	}
+}
+
 #pragma endregion
 
 int main()
@@ -96,9 +114,9 @@ int main()
 		};
 
 		//blend混合
-		GLCall(glEnable(GL_BLEND));
+		//GLCall(glEnable(GL_BLEND));
 		//GLCall(glBlendFunc(GL_ONE, GL_ZERO));
-		GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+		//GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
 		VertexArray va;
 		VertexBuffer vb(positions, 4 * 4 * sizeof(float));
@@ -113,9 +131,16 @@ int main()
 
 		IndexBuffer ib(indices, 6);
 
+		//一个优秀的缩放矩阵
+		//既可以填入标准化坐标，也可以填入屏幕坐标
+		//可以根据传入的左右 上下值构造一个缩放比例
+		glm::mat4 proj = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+		printMatrix4(proj);
+
 		Shader shader("res/shaders/Basic.shader");
 		shader.Bind();
 		shader.SetUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
+		shader.SetUniformMat4f("u_MVP", proj);
 
 		//要保证这里的SetUniform1i设置的0与上面绑定的激活纹理单元一致
 		//这样u_Texture表示的纹理采样器才能和纹理对象中保存的图片信息保持一致
