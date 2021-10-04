@@ -78,7 +78,7 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);//默认运行的是兼容模式
 
-	window = glfwCreateWindow(640, 480, "EnzoWindow", NULL, NULL);
+	window = glfwCreateWindow(900, 540, "EnzoWindow", NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();
@@ -101,10 +101,14 @@ int main()
 		//顶点数据
 		float positions[] = {
 			//位置		  //纹理坐标
-			-0.5f, -0.5f, 0.0f, 0.0f,// 0
-			 0.5f, -0.5f, 1.0f, 0.0f,// 1
-			 0.5f,  0.5f, 1.0f, 1.0f,// 2
-			-0.5f,  0.5f, 0.0f, 1.0f // 3
+			//-0.5f, -0.5f, 0.0f, 0.0f,// 0
+			// 0.5f, -0.5f, 1.0f, 0.0f,// 1
+			// 0.5f,  0.5f, 1.0f, 1.0f,// 2
+			//-0.5f,  0.5f, 0.0f, 1.0f, // 3
+			100.0f, 100.0f, 0.0f, 0.0f,// 0
+			200.0f, 100.0f, 1.0f, 0.0f,// 1
+			200.0f, 200.0f, 1.0f, 1.0f,// 2
+			100.0f, 200.0f, 0.0f, 1.0f // 3
 		};
 
 		//指示上面的4个顶点数据如何进行绘制
@@ -114,6 +118,7 @@ int main()
 		};
 
 		//blend混合
+		//这里禁用混合，可以看清楚一点矩阵的变换
 		//GLCall(glEnable(GL_BLEND));
 		//GLCall(glBlendFunc(GL_ONE, GL_ZERO));
 		//GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
@@ -134,13 +139,24 @@ int main()
 		//一个优秀的缩放矩阵
 		//既可以填入标准化坐标，也可以填入屏幕坐标
 		//可以根据传入的左右 上下值构造一个缩放比例
-		glm::mat4 proj = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+		glm::mat4 proj = glm::ortho(0.0f, 900.0f, 0.0f, 540.0f, -1.0f, 1.0f);
+		glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-100.0f, 0.0f, 0.0f));//平移矩阵
+		glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(200.0f, 200.0f, 0.0f));//平移矩阵
+
 		printMatrix4(proj);
+		printMatrix4(view);
+		printMatrix4(model);
+
+		glm::mat4 mvp = proj * view * model; //可以选择交给CPU计算也可以通过uniform交给GPU计算
+		printMatrix4(mvp);
 
 		Shader shader("res/shaders/Basic.shader");
 		shader.Bind();
 		shader.SetUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
-		shader.SetUniformMat4f("u_MVP", proj);
+		shader.SetUniformMat4f("u_MVP", mvp);
+		//shader.SetUniformMat4f("u_Model", model);
+		//shader.SetUniformMat4f("u_View", view);
+		//shader.SetUniformMat4f("u_Proj", proj);
 
 		//要保证这里的SetUniform1i设置的0与上面绑定的激活纹理单元一致
 		//这样u_Texture表示的纹理采样器才能和纹理对象中保存的图片信息保持一致
