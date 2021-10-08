@@ -39,6 +39,10 @@ p18:
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
+
 #pragma region glfw库 错误处理
 void glfwErrorHandle(int errCode, const char* errMsg)
 {
@@ -141,19 +145,19 @@ int main()
 		//可以根据传入的左右 上下值构造一个缩放比例
 		glm::mat4 proj = glm::ortho(0.0f, 900.0f, 0.0f, 540.0f, -1.0f, 1.0f);
 		glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-100.0f, 0.0f, 0.0f));//平移矩阵
-		glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(200.0f, 200.0f, 0.0f));//平移矩阵
+		//glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(200.0f, 200.0f, 0.0f));//平移矩阵
 
-		printMatrix4(proj);
-		printMatrix4(view);
-		printMatrix4(model);
+		//printMatrix4(proj);
+		//printMatrix4(view);
+		//printMatrix4(model);
 
-		glm::mat4 mvp = proj * view * model; //可以选择交给CPU计算也可以通过uniform交给GPU计算
-		printMatrix4(mvp);
+		//glm::mat4 mvp = proj * view * model; //可以选择交给CPU计算也可以通过uniform交给GPU计算
+		//printMatrix4(mvp);
 
 		Shader shader("res/shaders/Basic.shader");
 		shader.Bind();
 		shader.SetUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
-		shader.SetUniformMat4f("u_MVP", mvp);
+		//shader.SetUniformMat4f("u_MVP", mvp);
 		//shader.SetUniformMat4f("u_Model", model);
 		//shader.SetUniformMat4f("u_View", view);
 		//shader.SetUniformMat4f("u_Proj", proj);
@@ -173,6 +177,15 @@ int main()
 		//创建一个Renderer类
 		Renderer renderer;
 
+
+		//imgui
+		ImGui::CreateContext();
+		ImGui::StyleColorsDark();
+		ImGui_ImplGlfw_InitForOpenGL(window, true);
+		ImGui_ImplOpenGL3_Init();
+
+		glm::vec3 translation(200.0f, 200.0f, 0.0f);
+
 		//动态变化颜色
 		float r = 0.0f;
 		float increment = 0.05f;//步长
@@ -182,10 +195,18 @@ int main()
 			renderer.setBGColor(0.2f, 0.3f, 0.3f, 1.0f);
 			renderer.Clear();
 
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
+
+			glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
+			glm::mat4 mvp = proj * view * model;
+
 			//使用顶点数据对象
 			shader.Bind();
 			shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
-			
+			shader.SetUniformMat4f("u_MVP", mvp);
+
 			renderer.Draw(va, ib, shader);
 
 			//p16:unBind不是必要的操作，能再调试时起作用，但是会影响性能
@@ -199,13 +220,27 @@ int main()
 				increment = 0.05f;
 			r += increment;
 
+			{
+				ImGui::SliderFloat3("Translation", &translation.x, 0.0f, 960.0f);
+				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+			}
+
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 			glfwSwapBuffers(window);
 
 			glfwPollEvents();
 		}
 
+		ImGui_ImplOpenGL3_Shutdown();
+		ImGui_ImplGlfw_Shutdown();
+		ImGui::DestroyContext();
 		//离开作用域  析构 shader va vb ib
 	}
+
+
+
 	glfwTerminate();
 	//删除glfw上下文之后，glGetError会返回错误
 	//每次调用这个glGetError都返回错误，造成了无限循环
