@@ -105,14 +105,10 @@ int main()
 		//顶点数据
 		float positions[] = {
 			//位置		  //纹理坐标
-			//-0.5f, -0.5f, 0.0f, 0.0f,// 0
-			// 0.5f, -0.5f, 1.0f, 0.0f,// 1
-			// 0.5f,  0.5f, 1.0f, 1.0f,// 2
-			//-0.5f,  0.5f, 0.0f, 1.0f, // 3
-			100.0f, 100.0f, 0.0f, 0.0f,// 0
-			200.0f, 100.0f, 1.0f, 0.0f,// 1
-			200.0f, 200.0f, 1.0f, 1.0f,// 2
-			100.0f, 200.0f, 0.0f, 1.0f // 3
+			-50.0f, -50.0f, 0.0f, 0.0f,// 0
+			 50.0f, -50.0f, 1.0f, 0.0f,// 1
+			 50.0f,  50.0f, 1.0f, 1.0f,// 2
+			-50.0f,  50.0f, 0.0f, 1.0f // 3
 		};
 
 		//指示上面的4个顶点数据如何进行绘制
@@ -140,27 +136,14 @@ int main()
 
 		IndexBuffer ib(indices, 6);
 
-		//一个优秀的缩放矩阵
-		//既可以填入标准化坐标，也可以填入屏幕坐标
-		//可以根据传入的左右 上下值构造一个缩放比例
-		glm::mat4 proj = glm::ortho(0.0f, 900.0f, 0.0f, 540.0f, -1.0f, 1.0f);
-		glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-100.0f, 0.0f, 0.0f));//平移矩阵
-		//glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(200.0f, 200.0f, 0.0f));//平移矩阵
+		//正交投影
+		glm::mat4 proj = glm::ortho(0.0f, 900.0f, 0.0f, 540.0f, 1.0f, -100.0f);
+		glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));//平移矩阵
 
-		//printMatrix4(proj);
-		//printMatrix4(view);
-		//printMatrix4(model);
-
-		//glm::mat4 mvp = proj * view * model; //可以选择交给CPU计算也可以通过uniform交给GPU计算
-		//printMatrix4(mvp);
 
 		Shader shader("res/shaders/Basic.shader");
 		shader.Bind();
 		shader.SetUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
-		//shader.SetUniformMat4f("u_MVP", mvp);
-		//shader.SetUniformMat4f("u_Model", model);
-		//shader.SetUniformMat4f("u_View", view);
-		//shader.SetUniformMat4f("u_Proj", proj);
 
 		//要保证这里的SetUniform1i设置的0与上面绑定的激活纹理单元一致
 		//这样u_Texture表示的纹理采样器才能和纹理对象中保存的图片信息保持一致
@@ -184,7 +167,8 @@ int main()
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		ImGui_ImplOpenGL3_Init();
 
-		glm::vec3 translation(200.0f, 200.0f, 0.0f);
+		glm::vec3 translationA(200.0f, 200.0f, 0.0f);
+		glm::vec3 translationB(400.0f, 200.0f, 0.0f);
 
 		//动态变化颜色
 		float r = 0.0f;
@@ -199,20 +183,25 @@ int main()
 			ImGui_ImplGlfw_NewFrame();
 			ImGui::NewFrame();
 
-			glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
-			glm::mat4 mvp = proj * view * model;
+			{
+				//使用顶点数据对象
+				shader.Bind();			
+				glm::mat4 model = glm::translate(glm::mat4(1.0f), translationA);
+				glm::mat4 mvp = proj * view * model;
+				shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
+				shader.SetUniformMat4f("u_MVP", mvp);
+				renderer.Draw(va, ib, shader);
+			}
 
-			//使用顶点数据对象
-			shader.Bind();
-			shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
-			shader.SetUniformMat4f("u_MVP", mvp);
+			{
+				shader.Bind();
+				glm::mat4 model = glm::translate(glm::mat4(1.0f), translationB);
+				glm::mat4 mvp = proj * view * model;
+				shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
+				shader.SetUniformMat4f("u_MVP", mvp);
+				renderer.Draw(va, ib, shader);
+			}
 
-			renderer.Draw(va, ib, shader);
-
-			//p16:unBind不是必要的操作，能再调试时起作用，但是会影响性能
-			//va.Unbind();
-			//ib.Unbind();
-			//shader.Unbind();
 
 			if (r > 1.0f)
 				increment = -0.05f;
@@ -221,7 +210,8 @@ int main()
 			r += increment;
 
 			{
-				ImGui::SliderFloat3("Translation", &translation.x, 0.0f, 960.0f);
+				ImGui::SliderFloat3("Translation A", &translationA.x, 0.0f, 960.0f);
+				ImGui::SliderFloat3("Translation B", &translationB.x, 0.0f, 960.0f);
 				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 			}
 
