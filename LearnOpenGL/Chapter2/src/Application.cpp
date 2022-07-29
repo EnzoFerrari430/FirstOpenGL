@@ -77,48 +77,48 @@ int main()
 
 	//顶点数据
 	float vertexs[] = {
-		//坐标
-		-0.5f, -0.5f, -0.5f,//后面
-		 0.5f, -0.5f, -0.5f,
-		 0.5f,  0.5f, -0.5f,
-		 0.5f,  0.5f, -0.5f,
-		-0.5f,  0.5f, -0.5f,
-		-0.5f, -0.5f, -0.5f,
+		//坐标                //法线
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,//后面
+		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,//前面
+		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+		
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,//左面
+		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+		
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,//右面
+		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+		 
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,//底面
+		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
 
-		-0.5f, -0.5f,  0.5f,//前面
-		 0.5f, -0.5f,  0.5f,
-		 0.5f,  0.5f,  0.5f,
-		 0.5f,  0.5f,  0.5f,
-		-0.5f,  0.5f,  0.5f,
-		-0.5f, -0.5f,  0.5f,
-
-		-0.5f,  0.5f,  0.5f,//左面
-		-0.5f,  0.5f, -0.5f,
-		-0.5f, -0.5f, -0.5f,
-		-0.5f, -0.5f, -0.5f,
-		-0.5f, -0.5f,  0.5f,
-		-0.5f,  0.5f,  0.5f,
-
-		 0.5f,  0.5f,  0.5f,//右面
-		 0.5f,  0.5f, -0.5f,
-		 0.5f, -0.5f, -0.5f,
-		 0.5f, -0.5f, -0.5f,
-		 0.5f, -0.5f,  0.5f,
-		 0.5f,  0.5f,  0.5f,
-
-		-0.5f, -0.5f, -0.5f,//底面
-		 0.5f, -0.5f, -0.5f,
-		 0.5f, -0.5f,  0.5f,
-		 0.5f, -0.5f,  0.5f,
-		-0.5f, -0.5f,  0.5f,
-		-0.5f, -0.5f, -0.5f,
-
-		-0.5f,  0.5f, -0.5f,//顶面
-		 0.5f,  0.5f, -0.5f,
-		 0.5f,  0.5f,  0.5f,
-		 0.5f,  0.5f,  0.5f,
-		-0.5f,  0.5f,  0.5f,
-		-0.5f,  0.5f, -0.5f
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,//顶面
+		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
 	};
 
 	{
@@ -132,6 +132,7 @@ int main()
 		VertexBuffer vb(vertexs, sizeof(vertexs));
 		VertexBufferLayout layout;
 		layout.push<float>(3); //坐标
+		layout.push<float>(3); //法线
 		va.addBuffer(vb, layout);
 
 		VertexArray lightVa;
@@ -171,12 +172,18 @@ int main()
 
 				shader.setUniform3f("objectColor", 1.0f, 0.5f, 0.31f);
 				shader.setUniform3f("lightColor", 1.0f, 1.0f, 1.0f);
+				lightPos.x = 2.33f * sin(currentFrame);
+				lightPos.z = 2.33f * cos(currentFrame);
+
+				shader.setUniform3f("lightPos", lightPos);
+				shader.setUniform3f("viewPos", camera.Position);
 
 				shader.setUniformMat4f("projection", projection);
 				shader.setUniformMat4f("view", view);
 
 				// world transformation
 				glm::mat4 model = glm::mat4(1.0f);
+				model = glm::translate(model, glm::vec3(0.0f, 0.5f, 0.0f));
 				shader.setUniformMat4f("model", model);
 
 				//renderer.Draw(va, ib, shader);
@@ -186,6 +193,7 @@ int main()
 			{
 				lightShader.bind();
 
+				lightShader.setUniform3f("lightColor", 1.0f, 1.0f, 1.0f);
 
 				lightShader.setUniformMat4f("projection", projection);
 				lightShader.setUniformMat4f("view", view);
