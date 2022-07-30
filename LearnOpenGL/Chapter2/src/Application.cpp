@@ -170,35 +170,49 @@ int main()
 			{
 				shader.bind();
 
-				shader.setUniform3f("objectColor", 1.0f, 0.5f, 0.31f);
-				shader.setUniform3f("lightColor", 1.0f, 1.0f, 1.0f);
 				lightPos.x = 2.33f * sin(currentFrame);
 				lightPos.z = 2.33f * cos(currentFrame);
 
-				shader.setUniform3f("lightPos", lightPos);
+				//shader.setUniform3f("lightPos", lightPos);
 				shader.setUniform3f("viewPos", camera.Position);
+
+				shader.setUniform3f("material.ambient", 1.0f, 0.5f, 0.31f);
+				shader.setUniform3f("material.diffuse", 1.0f, 0.5f, 0.31f);
+				shader.setUniform3f("material.specular", 1.0f, 0.5f, 0.31f);
+				shader.setUniform1f("material.shininess", 128.0f);
+
+				//π‚’’ Ù–‘
+				glm::vec3 lightColor;
+				lightColor.r = sin(glfwGetTime() * 2.0f);
+				lightColor.g = sin(glfwGetTime() * 0.7f);
+				lightColor.b = sin(glfwGetTime() * 1.3f);
+				glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
+				glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
+				shader.setUniform3f("light.position", lightPos);
+				shader.setUniform3f("light.ambient", ambientColor);
+				shader.setUniform3f("light.diffuse", diffuseColor);
+				shader.setUniform3f("light.specular", lightColor);
 
 				shader.setUniformMat4f("projection", projection);
 				shader.setUniformMat4f("view", view);
 
 				// world transformation
 				glm::mat4 model = glm::mat4(1.0f);
-				model = glm::translate(model, glm::vec3(0.0f, 0.5f, 0.0f));
+				model = glm::translate(model, glm::vec3(0.0f, -0.5f, 0.0f));
 				shader.setUniformMat4f("model", model);
 
-				//renderer.Draw(va, ib, shader);
 				renderer.draw(va, 0, 36, shader);
-			}
 
-			{
+
+
 				lightShader.bind();
 
-				lightShader.setUniform3f("lightColor", 1.0f, 1.0f, 1.0f);
+				lightShader.setUniform3f("lightColor", lightColor);
 
 				lightShader.setUniformMat4f("projection", projection);
 				lightShader.setUniformMat4f("view", view);
 
-				glm::mat4 model = glm::mat4(1.0f);
+				model = glm::mat4(1.0f);
 				model = glm::translate(model, lightPos);
 				model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
 				lightShader.setUniformMat4f("model", model);
