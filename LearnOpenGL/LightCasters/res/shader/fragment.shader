@@ -9,6 +9,10 @@ struct Material {
 
 struct Light {
 	vec3 position;
+	vec3 direction;
+	float cutOff;//内切光角
+	float outerCutOff;//外切光角
+
 	vec3 ambient;
 	vec3 diffuse;
 	vec3 specular;
@@ -53,6 +57,18 @@ void main()
 	float attenuation = 1.0f / (light.constant + light.linear * distance +
 		light.quadratic * distance * distance);
 
-	vec3 result = (ambient + diffuse + specular) * attenuation;
-	color = vec4(result, 1.0f);
+	float theta = dot(lightDir, normalize(-light.direction));
+	if (theta > light.cutOff) {
+		vec3 result = (ambient + diffuse + specular) * attenuation;
+		color = vec4(result, 1.0f);
+	}
+	else {
+		//边缘平滑处理
+		float epsilon = light.cutOff - light.outerCutOff;
+		float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0f, 1.0f);
+		diffuse *= intensity;
+		specular *= intensity;
+		vec3 result = (ambient + diffuse + specular) * attenuation;
+		color = vec4(result, 1.0f);
+	}
 }

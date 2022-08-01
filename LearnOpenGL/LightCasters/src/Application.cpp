@@ -33,8 +33,6 @@ float lastX = 800.0f / 2.0;
 float lastY = 600.0f / 2.0;
 bool firstMove = true;
 
-// lighting
-glm::vec3 lightPos(1.2f, 0.0f, 2.0f);
 
 int main()
 {
@@ -145,7 +143,6 @@ int main()
 
 
 		Shader shader("res/shader/vertex.shader", "res/shader/fragment.shader");
-		Shader lightShader("res/shader/vertex.shader", "res/shader/lightFrag.shader");
 
 
 		//解绑
@@ -153,19 +150,18 @@ int main()
 		vb.unbind();
 		lightVa.unbind();
 		shader.unbind();
-		lightShader.unbind();
 
 		//先旋转再位移
 		glm::vec3 cubePositions[] = {
-			glm::vec3(0.0f,  0.0f,   0.0f),
-			glm::vec3(2.0f,  5.0f, -15.0f),
+			glm::vec3( 0.0f,  0.0f,   0.0f),
+			glm::vec3( 2.0f,  5.0f, -15.0f),
 			glm::vec3(-1.5f, -2.2f,  -2.5f),
 			glm::vec3(-3.8f, -2.0f, -12.3f),
-			glm::vec3(2.4f, -0.4f,  -3.5f),
+			glm::vec3( 2.4f, -0.4f,  -3.5f),
 			glm::vec3(-1.7f,  3.0f,  -7.5f),
-			glm::vec3(1.3f, -2.0f,  -2.5f),
-			glm::vec3(1.5f,  2.0f,  -2.5f),
-			glm::vec3(1.5f,  0.2f,  -1.5f),
+			glm::vec3( 1.3f, -2.0f,  -2.5f),
+			glm::vec3( 1.5f,  2.0f,  -2.5f),
+			glm::vec3( 1.5f,  0.2f,  -1.5f),
 			glm::vec3(-1.3f,  1.0f,  -1.5f)
 		};
 
@@ -190,9 +186,6 @@ int main()
 				texture1.bind(0);
 				texture2.bind(1);
 
-				lightPos.x = 5.0f * sin(currentFrame);
-				lightPos.z = 5.0f * cos(currentFrame);
-
 				shader.setUniform3f("viewPos", camera.Position);
 
 				shader.setUniform1i("material.diffuse", 0);
@@ -200,13 +193,17 @@ int main()
 				shader.setUniform1f("material.shininess", 128.0f);
 
 				//光照属性
+				shader.setUniform3f("light.position", camera.Position);
+				shader.setUniform3f("light.direction", camera.Front);
+				shader.setUniform1f("light.cutOff", glm::cos(glm::radians(12.5f)));
+				shader.setUniform1f("light.outerCutOff", glm::cos(glm::radians(17.5f)));
+
 				glm::vec3 lightColor(1.0f);
 				//lightColor.r = sin(glfwGetTime() * 2.0f);
 				//lightColor.g = sin(glfwGetTime() * 0.7f);
 				//lightColor.b = sin(glfwGetTime() * 1.3f);
 				glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
 				glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
-				shader.setUniform3f("light.position", lightPos);
 				shader.setUniform3f("light.ambient", ambientColor);
 				shader.setUniform3f("light.diffuse", diffuseColor);
 				shader.setUniform3f("light.specular", lightColor);
@@ -231,22 +228,6 @@ int main()
 
 					renderer.draw(va, 0, 36, shader);
 				}
-
-				
-
-				lightShader.bind();
-				lightShader.setUniform3f("lightColor", lightColor);
-
-				lightShader.setUniformMat4f("projection", projection);
-				lightShader.setUniformMat4f("view", view);
-
-				glm::mat4 lightModel = glm::mat4(1.0f);
-				lightModel = glm::translate(lightModel, lightPos);
-				lightModel = glm::scale(lightModel, glm::vec3(0.2f)); // a smaller cube
-				lightShader.setUniformMat4f("model", lightModel);
-
-				renderer.draw(lightVa, 0, 36, lightShader);
-
 				
 			}
 
