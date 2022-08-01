@@ -34,7 +34,7 @@ float lastY = 600.0f / 2.0;
 bool firstMove = true;
 
 // lighting
-glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+glm::vec3 lightPos(1.2f, 0.0f, 2.0f);
 
 int main()
 {
@@ -77,48 +77,48 @@ int main()
 
 	//顶点数据
 	float vertexs[] = {
-		//坐标                //法线
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,//后面
-		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		//坐标                //法线                //贴图
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,//后面
+		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
 		
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,//前面
-		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,//前面
+		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
 		
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,//左面
-		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,//左面
+		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
 		
-		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,//右面
-		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,//右面
+		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
 		 
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,//底面
-		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,//底面
+		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
 
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,//顶面
-		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,//顶面
+		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
 	};
 
 	{
@@ -133,11 +133,15 @@ int main()
 		VertexBufferLayout layout;
 		layout.push<float>(3); //坐标
 		layout.push<float>(3); //法线
+		layout.push<float>(2); //贴图
 		va.addBuffer(vb, layout);
 
 		VertexArray lightVa;
 		lightVa.bind();
 		lightVa.addBuffer(vb, layout);
+
+		Texture texture1("res/pic/container2.png");
+		Texture texture2("res/pic/container2_specular.png");
 
 
 		Shader shader("res/shader/vertex.shader", "res/shader/fragment.shader");
@@ -169,23 +173,23 @@ int main()
 			glm::mat4 view = camera.GetViewMatrix();
 			{
 				shader.bind();
+				texture1.bind(0);
+				texture2.bind(1);
 
 				lightPos.x = 2.33f * sin(currentFrame);
 				lightPos.z = 2.33f * cos(currentFrame);
 
-				//shader.setUniform3f("lightPos", lightPos);
 				shader.setUniform3f("viewPos", camera.Position);
 
-				shader.setUniform3f("material.ambient", 1.0f, 0.5f, 0.31f);
-				shader.setUniform3f("material.diffuse", 1.0f, 0.5f, 0.31f);
-				shader.setUniform3f("material.specular", 1.0f, 0.5f, 0.31f);
+				shader.setUniform1i("material.diffuse", 0);
+				shader.setUniform1i("material.specular", 1);
 				shader.setUniform1f("material.shininess", 128.0f);
 
 				//光照属性
-				glm::vec3 lightColor;
-				lightColor.r = sin(glfwGetTime() * 2.0f);
-				lightColor.g = sin(glfwGetTime() * 0.7f);
-				lightColor.b = sin(glfwGetTime() * 1.3f);
+				glm::vec3 lightColor(1.0f);
+				//lightColor.r = sin(glfwGetTime() * 2.0f);
+				//lightColor.g = sin(glfwGetTime() * 0.7f);
+				//lightColor.b = sin(glfwGetTime() * 1.3f);
 				glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
 				glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
 				shader.setUniform3f("light.position", lightPos);
@@ -198,7 +202,7 @@ int main()
 
 				// world transformation
 				glm::mat4 model = glm::mat4(1.0f);
-				model = glm::translate(model, glm::vec3(0.0f, -0.5f, 0.0f));
+				model = glm::translate(model, glm::vec3(0.0f, 0.5f, 0.0f));
 				shader.setUniformMat4f("model", model);
 
 				renderer.draw(va, 0, 36, shader);
