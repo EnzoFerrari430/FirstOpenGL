@@ -34,7 +34,7 @@ float lastY = 600.0f / 2.0;
 bool firstMove = true;
 
 // lighting
-glm::vec3 lightDir(-0.2f, -1.0f, -0.3f);
+glm::vec3 lightPos(1.2f, 0.0f, 2.0f);
 
 int main()
 {
@@ -145,6 +145,7 @@ int main()
 
 
 		Shader shader("res/shader/vertex.shader", "res/shader/fragment.shader");
+		Shader lightShader("res/shader/vertex.shader", "res/shader/lightFrag.shader");
 
 
 		//解绑
@@ -152,6 +153,7 @@ int main()
 		vb.unbind();
 		lightVa.unbind();
 		shader.unbind();
+		lightShader.unbind();
 
 		//先旋转再位移
 		glm::vec3 cubePositions[] = {
@@ -188,6 +190,9 @@ int main()
 				texture1.bind(0);
 				texture2.bind(1);
 
+				lightPos.x = 5.0f * sin(currentFrame);
+				lightPos.z = 5.0f * cos(currentFrame);
+
 				shader.setUniform3f("viewPos", camera.Position);
 
 				shader.setUniform1i("material.diffuse", 0);
@@ -201,10 +206,13 @@ int main()
 				//lightColor.b = sin(glfwGetTime() * 1.3f);
 				glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
 				glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
-				shader.setUniform3f("light.direction", lightDir);
+				shader.setUniform3f("light.position", lightPos);
 				shader.setUniform3f("light.ambient", ambientColor);
 				shader.setUniform3f("light.diffuse", diffuseColor);
 				shader.setUniform3f("light.specular", lightColor);
+				shader.setUniform1f("light.constant", 1.0f);
+				shader.setUniform1f("light.linear", 0.09f);
+				shader.setUniform1f("light.quadratic", 0.032f);
 
 				shader.setUniformMat4f("projection", projection);
 				shader.setUniformMat4f("view", view);
@@ -223,6 +231,23 @@ int main()
 
 					renderer.draw(va, 0, 36, shader);
 				}
+
+				
+
+				lightShader.bind();
+				lightShader.setUniform3f("lightColor", lightColor);
+
+				lightShader.setUniformMat4f("projection", projection);
+				lightShader.setUniformMat4f("view", view);
+
+				glm::mat4 lightModel = glm::mat4(1.0f);
+				lightModel = glm::translate(lightModel, lightPos);
+				lightModel = glm::scale(lightModel, glm::vec3(0.2f)); // a smaller cube
+				lightShader.setUniformMat4f("model", lightModel);
+
+				renderer.draw(lightVa, 0, 36, lightShader);
+
+				
 			}
 
 			glfwSwapBuffers(window);
