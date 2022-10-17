@@ -250,6 +250,24 @@ int main()
 				shader.setUniform3f("dirLight.specular", dirLightColor);
 				shader.setUniform3f("dirLight.direction", dirPos);
 
+				//聚光
+				glm::vec3 lightColor(1.0f);
+				//lightColor.r = sin(glfwGetTime() * 2.0f);
+				//lightColor.g = sin(glfwGetTime() * 0.7f);
+				//lightColor.b = sin(glfwGetTime() * 1.3f);
+				glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
+				glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
+				shader.setUniform3f("spotLight.position", camera.Position);
+				shader.setUniform3f("spotLight.direction", camera.Front);
+				shader.setUniform1f("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+				shader.setUniform1f("spotLight.outerCutOff", glm::cos(glm::radians(17.5f)));
+				shader.setUniform3f("spotLight.ambient", ambientColor);
+				shader.setUniform3f("spotLight.diffuse", diffuseColor);
+				shader.setUniform3f("spotLight.specular", lightColor);
+				shader.setUniform1f("spotLight.constant", 1.0f);
+				shader.setUniform1f("spotLight.linear", 0.09f);
+				shader.setUniform1f("spotLight.quadratic", 0.032f);
+
 
 				//点光源
 				for (int i = 0; i < 4; ++i) {
