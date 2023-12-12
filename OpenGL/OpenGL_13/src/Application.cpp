@@ -1,23 +1,23 @@
 /*
 p13:
-	¿ªÊ¼·â×°Àà
-	·â×° vertex buffer object ºÍvertex index buffer
+	å¼€å§‹å°è£…ç±»
+	å°è£… vertex buffer object å’Œvertex index buffer
 
 p18:
-	blend »ìºÏ
-	»ìºÏ¾ÍÊÇ½«ÎÒÃÇµÄÔ´É«ºÍÎÒÃÇµÄÄ¿±êÉ«ÒÔÄ³ÖÖ»ìºÏÉú³ÉÌØĞ§µÄ¼¼Êõ
-	»ìºÏ²Ù×÷Ö»ÄÜÔÚRGBAÄ£Ê½ÏÂ½øĞĞ
-	»ìºÏµÄ¹Ø¼ü×÷ÓÃµÄaÖµÉÏ½«Ô´É«ºÍÄ¿±êÉ«°´ÕÕ¸ø¶¨µÄ±ÈÂÊ½øĞĞ»ìºÏ£¬ÒÔ´ïµ½²»Í¬³Ì¶ÈµÄÍ¸Ã÷¶È¡£
-	aÖµÎª0ÔòÍêÈ«Í¸Ã÷ aÖµÎª1ÔòÍêÈ«²»Í¸Ã÷¡£
+	blend æ··åˆ
+	æ··åˆå°±æ˜¯å°†æˆ‘ä»¬çš„æºè‰²å’Œæˆ‘ä»¬çš„ç›®æ ‡è‰²ä»¥æŸç§æ··åˆç”Ÿæˆç‰¹æ•ˆçš„æŠ€æœ¯
+	æ··åˆæ“ä½œåªèƒ½åœ¨RGBAæ¨¡å¼ä¸‹è¿›è¡Œ
+	æ··åˆçš„å…³é”®ä½œç”¨çš„aå€¼ä¸Šå°†æºè‰²å’Œç›®æ ‡è‰²æŒ‰ç…§ç»™å®šçš„æ¯”ç‡è¿›è¡Œæ··åˆï¼Œä»¥è¾¾åˆ°ä¸åŒç¨‹åº¦çš„é€æ˜åº¦ã€‚
+	aå€¼ä¸º0åˆ™å®Œå…¨é€æ˜ aå€¼ä¸º1åˆ™å®Œå…¨ä¸é€æ˜ã€‚
 
-	Ô´É« source color£ºfragment shaderÖĞÊä³öµÄ×îÖÕÑÕÉ«
-	Ä¿±êÉ« target color: fragment shaderÊä³öµÄÇøÓòµÄÑÕÉ«
+	æºè‰² source colorï¼šfragment shaderä¸­è¾“å‡ºçš„æœ€ç»ˆé¢œè‰²
+	ç›®æ ‡è‰² target color: fragment shaderè¾“å‡ºçš„åŒºåŸŸçš„é¢œè‰²
 
-	Ä¬ÈÏ»ìºÏÖµÊÇ Ô´É«1¼´ GL_ONE Ä¿±êÉ«0 GL_ZERO
+	é»˜è®¤æ··åˆå€¼æ˜¯ æºè‰²1å³ GL_ONE ç›®æ ‡è‰²0 GL_ZERO
 
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);// ÊÇ×î³£Ê¹ÓÃµÄ
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);// æ˜¯æœ€å¸¸ä½¿ç”¨çš„
 	
-	Àı×Ó:
+	ä¾‹å­:
 	R = (src.r * 0) + (dst.r * (1 - 0)) = dst.r;
 	G = (src.g * 0) + (dst.g * (1 - 0)) = dst.g;
 	B = (src.b * 0) + (dst.b * (1 - 0)) = dst.b;
@@ -43,15 +43,15 @@ p18:
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
 
-#pragma region glfw¿â ´íÎó´¦Àí
+#pragma region glfwåº“ é”™è¯¯å¤„ç†
 void glfwErrorHandle(int errCode, const char* errMsg)
 {
 	std::cout << "[glfw error] (" << errCode << ") :" << errMsg << std::endl;
 }
 #pragma endregion
 
-#pragma region ´òÓ¡Êı¾İ
-//´òÓ¡¾ØÕóÊı¾İ
+#pragma region æ‰“å°æ•°æ®
+//æ‰“å°çŸ©é˜µæ•°æ®
 void printMatrix4(const glm::mat4 matrix)
 {
 	for (int i = 0; i < 4; ++i)
@@ -77,10 +77,10 @@ int main()
 		return -1;
 	}
 
-	//Ê¹ÓÃOpenGLºËĞÄÄ£Ê½
+	//ä½¿ç”¨OpenGLæ ¸å¿ƒæ¨¡å¼
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);//Ä¬ÈÏÔËĞĞµÄÊÇ¼æÈİÄ£Ê½
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);//é»˜è®¤è¿è¡Œçš„æ˜¯å…¼å®¹æ¨¡å¼
 
 	window = glfwCreateWindow(900, 540, "EnzoWindow", NULL, NULL);
 	if (!window)
@@ -92,7 +92,7 @@ int main()
 
 	glfwSwapInterval(1);
 
-	//±ØĞëÒªÔÚglew¿â³õÊ¼»¯Ö®ºó²Å¿ÉÒÔµ÷ÓÃglGetError
+	//å¿…é¡»è¦åœ¨glewåº“åˆå§‹åŒ–ä¹‹åæ‰å¯ä»¥è°ƒç”¨glGetError
 	if (glewInit() != GLEW_OK)
 	{
 		std::cout << "error" << std::endl;
@@ -100,25 +100,25 @@ int main()
 	
 	GLCall(std::cout << glGetString(GL_VERSION) << std::endl);
 
-	//Ôö¼Ó×÷ÓÃÓò£¬ÈÃVertexBuffer IndexBufferÄÜÔÙglfwTerminateÖ®Ç°Îö¹¹
+	//å¢åŠ ä½œç”¨åŸŸï¼Œè®©VertexBuffer IndexBufferèƒ½å†glfwTerminateä¹‹å‰ææ„
 	{
-		//¶¥µãÊı¾İ
+		//é¡¶ç‚¹æ•°æ®
 		float positions[] = {
-			//Î»ÖÃ		  //ÎÆÀí×ø±ê
+			//ä½ç½®		  //çº¹ç†åæ ‡
 			-50.0f, -50.0f, 0.0f, 0.0f,// 0
 			 50.0f, -50.0f, 1.0f, 0.0f,// 1
 			 50.0f,  50.0f, 1.0f, 1.0f,// 2
 			-50.0f,  50.0f, 0.0f, 1.0f // 3
 		};
 
-		//Ö¸Ê¾ÉÏÃæµÄ4¸ö¶¥µãÊı¾İÈçºÎ½øĞĞ»æÖÆ
+		//æŒ‡ç¤ºä¸Šé¢çš„4ä¸ªé¡¶ç‚¹æ•°æ®å¦‚ä½•è¿›è¡Œç»˜åˆ¶
 		unsigned int indices[] = {
-			0, 1, 2, //µÚÒ»¸öÈı½ÇĞÎµÄ3¸ö¶¥µãË÷Òı
-			2, 3, 0  //µÚ¶ş¸öÈı½ÇĞÎµÄ3¸ö¶¥µãË÷Òı
+			0, 1, 2, //ç¬¬ä¸€ä¸ªä¸‰è§’å½¢çš„3ä¸ªé¡¶ç‚¹ç´¢å¼•
+			2, 3, 0  //ç¬¬äºŒä¸ªä¸‰è§’å½¢çš„3ä¸ªé¡¶ç‚¹ç´¢å¼•
 		};
 
-		//blend»ìºÏ
-		//ÕâÀï½ûÓÃ»ìºÏ£¬¿ÉÒÔ¿´Çå³şÒ»µã¾ØÕóµÄ±ä»»
+		//blendæ··åˆ
+		//è¿™é‡Œç¦ç”¨æ··åˆï¼Œå¯ä»¥çœ‹æ¸…æ¥šä¸€ç‚¹çŸ©é˜µçš„å˜æ¢
 		//GLCall(glEnable(GL_BLEND));
 		//GLCall(glBlendFunc(GL_ONE, GL_ZERO));
 		//GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
@@ -127,8 +127,8 @@ int main()
 		VertexBuffer vb(positions, 4 * 4 * sizeof(float));
 		VertexBufferLayout layout;
 		/*
-		Èç¹ûÓĞ¶à¸öÊôĞÔ£¬È·±£ÔÚAddBufferÖ®Ç°¶¼push½øÈ¥
-		ÔÚAddBufferµÄÊ±ºòÎÒÃÇÒª¼ÆËãstride
+		å¦‚æœæœ‰å¤šä¸ªå±æ€§ï¼Œç¡®ä¿åœ¨AddBufferä¹‹å‰éƒ½pushè¿›å»
+		åœ¨AddBufferçš„æ—¶å€™æˆ‘ä»¬è¦è®¡ç®—stride
 		*/
 		layout.Push<float>(2);
 		layout.Push<float>(2);
@@ -136,43 +136,45 @@ int main()
 
 		IndexBuffer ib(indices, 6);
 
-		//Õı½»Í¶Ó°
+		//æ­£äº¤æŠ•å½±
 		glm::mat4 proj = glm::ortho(0.0f, 900.0f, 0.0f, 540.0f, 1.0f, -100.0f);
-		glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));//Æ½ÒÆ¾ØÕó
+		glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));//å¹³ç§»çŸ©é˜µ
 
 
 		Shader shader("res/shaders/Basic.shader");
 		shader.Bind();
 		shader.SetUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
 
-		//Òª±£Ö¤ÕâÀïµÄSetUniform1iÉèÖÃµÄ0ÓëÉÏÃæ°ó¶¨µÄ¼¤»îÎÆÀíµ¥ÔªÒ»ÖÂ
-		//ÕâÑùu_Texture±íÊ¾µÄÎÆÀí²ÉÑùÆ÷²ÅÄÜºÍÎÆÀí¶ÔÏóÖĞ±£´æµÄÍ¼Æ¬ĞÅÏ¢±£³ÖÒ»ÖÂ
+		//è¦ä¿è¯è¿™é‡Œçš„SetUniform1iè®¾ç½®çš„0ä¸ä¸Šé¢ç»‘å®šçš„æ¿€æ´»çº¹ç†å•å…ƒä¸€è‡´
+		//è¿™æ ·u_Textureè¡¨ç¤ºçš„çº¹ç†é‡‡æ ·å™¨æ‰èƒ½å’Œçº¹ç†å¯¹è±¡ä¸­ä¿å­˜çš„å›¾ç‰‡ä¿¡æ¯ä¿æŒä¸€è‡´
 		Texture texture("res/textures/MyLogo.png");
-		texture.Bind();//°ó¶¨ÒªÎÆÀíµ¥Ôª0ÉÏ
+		texture.Bind();//ç»‘å®šè¦çº¹ç†å•å…ƒ0ä¸Š
 		shader.SetUniform1i("u_Texture", 0);
 
-		//½â°ó,ÔÚäÖÈ¾µÄÊ±ºòÔÙ°ó¶¨ÉÏ
+		//è§£ç»‘,åœ¨æ¸²æŸ“çš„æ—¶å€™å†ç»‘å®šä¸Š
 		va.Unbind();
 		vb.Unbind();
 		ib.Unbind();
 		shader.Unbind();
 
-		//´´½¨Ò»¸öRendererÀà
+		//åˆ›å»ºä¸€ä¸ªRendererç±»
 		Renderer renderer;
 
 
 		//imgui
 		ImGui::CreateContext();
 		ImGui::StyleColorsDark();
+		auto io = ImGui::GetIO();
+		ImFont* font = io.Fonts->AddFontFromFileTTF("res/fonts/msyh.ttc", 18.0f, nullptr, io.Fonts->GetGlyphRangesChineseFull());
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		ImGui_ImplOpenGL3_Init();
 
 		glm::vec3 translationA(200.0f, 200.0f, 0.0f);
 		glm::vec3 translationB(400.0f, 200.0f, 0.0f);
 
-		//¶¯Ì¬±ä»¯ÑÕÉ«
+		//åŠ¨æ€å˜åŒ–é¢œè‰²
 		float r = 0.0f;
-		float increment = 0.05f;//²½³¤
+		float increment = 0.05f;//æ­¥é•¿
 
 		while (!glfwWindowShouldClose(window))
 		{
@@ -184,8 +186,8 @@ int main()
 			ImGui::NewFrame();
 
 			{
-				//Ê¹ÓÃ¶¥µãÊı¾İ¶ÔÏó
-				shader.Bind();			
+				//ä½¿ç”¨é¡¶ç‚¹æ•°æ®å¯¹è±¡
+				shader.Bind();
 				glm::mat4 model = glm::translate(glm::mat4(1.0f), translationA);
 				glm::mat4 mvp = proj * view * model;
 				shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
@@ -209,11 +211,24 @@ int main()
 				increment = 0.05f;
 			r += increment;
 
-			{
-				ImGui::SliderFloat3("Translation A", &translationA.x, 0.0f, 960.0f);
-				ImGui::SliderFloat3("Translation B", &translationB.x, 0.0f, 960.0f);
-				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-			}
+            {
+                ImGui::SliderFloat3(u8"å˜æ¢ A", &translationA.x, 0.0f, 960.0f);
+                ImGui::SliderFloat3("Translation B", &translationB.x, 0.0f, 960.0f);
+                ImGui::Text(u8"æ˜¾ç¤ºä¸­æ–‡è¯•è¯•éªš");
+                ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+                ImGui::LabelText("ä¸–ç•Œ", "æ˜¾ç¤ºä¸­æ–‡è¯•è¯•éªš");
+
+                //auto pos = ImGui::GetWindowPos();
+                int width, height;
+                glfwGetWindowSize(window, &width, &height);
+                ImVec2 pos = { width / 2.0f, height / 2.0f };
+                float fontSize = 48.0f;
+                ImGui::GetForegroundDrawList()->AddRectFilled({ 0.0f, pos.y - fontSize / 2.0f }, { (float)width, pos.y + fontSize / 2.0f }, 0x0fffffff);
+                unsigned int textureID = texture.GetTextureID();
+                ImGui::GetForegroundDrawList()->AddImage((void*)textureID, { pos.x - 48.0f, pos.y - fontSize / 2.0f },
+                    { pos.x, pos.y + fontSize / 2.0f });
+                ImGui::GetForegroundDrawList()->AddText(font, 48.0f, { pos.x, pos.y - fontSize / 2.0f }, 0xffff00ff, "LearningOpenGL");
+            }
 
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -226,14 +241,14 @@ int main()
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
-		//Àë¿ª×÷ÓÃÓò  Îö¹¹ shader va vb ib
+		//ç¦»å¼€ä½œç”¨åŸŸ  ææ„ shader va vb ib
 	}
 
 
 
 	glfwTerminate();
-	//É¾³ıglfwÉÏÏÂÎÄÖ®ºó£¬glGetError»á·µ»Ø´íÎó
-	//Ã¿´Îµ÷ÓÃÕâ¸öglGetError¶¼·µ»Ø´íÎó£¬Ôì³ÉÁËÎŞÏŞÑ­»·
-	//Õâ¾ÍÊÇ³ÌĞòÍË²»³öÀ´µÄÔ­Òò(¾­µäÖĞÎÄÓï²¡!!!  Õâ¾ÍÊÇÎªÊ²Ã´...µÄÔ­Òò)
+	//åˆ é™¤glfwä¸Šä¸‹æ–‡ä¹‹åï¼ŒglGetErrorä¼šè¿”å›é”™è¯¯
+	//æ¯æ¬¡è°ƒç”¨è¿™ä¸ªglGetErroréƒ½è¿”å›é”™è¯¯ï¼Œé€ æˆäº†æ— é™å¾ªç¯
+	//è¿™å°±æ˜¯ç¨‹åºé€€ä¸å‡ºæ¥çš„åŸå› (ç»å…¸ä¸­æ–‡è¯­ç—…!!!  è¿™å°±æ˜¯ä¸ºä»€ä¹ˆ...çš„åŸå› )
 	return 0;
 }

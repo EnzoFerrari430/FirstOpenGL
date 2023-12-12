@@ -15,10 +15,12 @@ public:
 	Texture(const std::string& path);
 	~Texture();
 
-	//slot ±íÊ¾ÎÆÀíµ¥ÔªµÄÎ»ÖÃ Ä¬ÈÏÊÇ0
-	//Ò»¸ö×ÅÉ«Æ÷³ÌĞò¶ÔÏó¿ÉÒÔ°ó¶¨¶à¸öÎÆÀíµ¥Ôª
+	//slot è¡¨ç¤ºçº¹ç†å•å…ƒçš„ä½ç½® é»˜è®¤æ˜¯0
+	//ä¸€ä¸ªç€è‰²å™¨ç¨‹åºå¯¹è±¡å¯ä»¥ç»‘å®šå¤šä¸ªçº¹ç†å•å…ƒ
 	void Bind(unsigned int slot = 0) const;
 	void Unbind() const;
+
+    unsigned int GetTextureID() const { return m_RendererID; }
 
 	inline int GetWidth() const { return m_Width; }
 	inline int GetHeight() const { return m_Height; }
