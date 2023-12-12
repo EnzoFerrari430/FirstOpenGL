@@ -21,8 +21,13 @@ shader（着色器）是运行在GPU上的小程序
 
 #include <gl/glew.h>
 #include <GLFW/glfw3.h>
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
 #include <iostream>
 #include <string>
+
+#include <dwmapi.h>
+#pragma comment(lib, "dwmapi.lib")
 
 
 /*************************************************
@@ -117,6 +122,7 @@ static unsigned int createShader(const std::string& vertexShader, const std::str
 
 int main()
 {
+
 	GLFWwindow* window;
 
 	if (!glfwInit())
@@ -129,6 +135,15 @@ int main()
 	{
 		glfwTerminate();
 	}
+
+    HWND hwnd = glfwGetWin32Window(window);
+    DWM_BLURBEHIND bb = { 0 };
+    HRGN hRgn = CreateRectRgn(0, 0, -1, -1); //应用毛玻璃的矩形范围，
+    //参数(0,0,-1,-1)可以让整个窗口客户区变成透明的，而鼠标是可以捕获到透明的区域
+    bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
+    bb.hRgnBlur = hRgn;
+    bb.fEnable = TRUE;
+    DwmEnableBlurBehindWindow(hwnd, &bb);
 
 	glfwMakeContextCurrent(window);
 
