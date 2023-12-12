@@ -13,6 +13,10 @@
 
 #include <iostream>
 
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
+
 //回调函数
 void framebuffer_size_callback(GLFWwindow* window, int width, int height); 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -35,6 +39,7 @@ bool firstMove = true;
 
 // lighting
 glm::vec3 lightPos(1.2f, 0.0f, 2.0f);
+glm::vec3 lightColor(1.0f);
 
 int main()
 {
@@ -64,7 +69,7 @@ int main()
 	glfwSetScrollCallback(window, scroll_callback);
 
 	//设置光标模式
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	//初始化GLAD
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -158,6 +163,12 @@ int main()
 
 		Renderer renderer;
 
+        //imgui
+        ImGui::CreateContext();
+        ImGui::StyleColorsDark();
+        ImGui_ImplGlfw_InitForOpenGL(window, true);
+        ImGui_ImplOpenGL3_Init();
+
 		while (!glfwWindowShouldClose(window))
 		{
 			float currentFrame = glfwGetTime();
@@ -169,15 +180,24 @@ int main()
 			renderer.setBGColor(0.1f, 0.1f, 0.1f, 1.0f);
 			renderer.clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+            ImGui_ImplOpenGL3_NewFrame();
+            ImGui_ImplGlfw_NewFrame();
+            ImGui::NewFrame();
+
+            {
+                ImGui::SliderFloat3("lightPos", &lightPos.x, -3.0f, 3.0f);
+                ImGui::ColorPicker3("lightColor", &lightColor.x, ImGuiColorEditFlags_Float | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_DisplayRGB);
+            }
+
+            glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 			glm::mat4 view = camera.GetViewMatrix();
 			{
 				shader.bind();
 				texture1.bind(0);
 				texture2.bind(1);
 
-				lightPos.x = 2.33f * sin(currentFrame);
-				lightPos.z = 2.33f * cos(currentFrame);
+				//lightPos.x = 2.33f * sin(currentFrame);
+				//lightPos.z = 2.33f * cos(currentFrame);
 
 				shader.setUniform3f("viewPos", camera.Position);
 
@@ -186,7 +206,6 @@ int main()
 				shader.setUniform1f("material.shininess", 128.0f);
 
 				//光照属性
-				glm::vec3 lightColor(1.0f);
 				//lightColor.r = sin(glfwGetTime() * 2.0f);
 				//lightColor.g = sin(glfwGetTime() * 0.7f);
 				//lightColor.b = sin(glfwGetTime() * 1.3f);
@@ -224,12 +243,18 @@ int main()
 				renderer.draw(lightVa, 0, 36, lightShader);
 			}
 
+            ImGui::Render();
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 			glfwSwapBuffers(window);
 			glfwPollEvents();//检查触发事件
 		}
 
-	}
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplGlfw_Shutdown();
+        ImGui::DestroyContext();
 
+	}
 
 	glfwTerminate();//反初始化
 	return 0;
