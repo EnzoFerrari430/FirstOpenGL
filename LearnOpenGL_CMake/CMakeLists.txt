@@ -33,6 +33,7 @@ set(1.getting_started
 
 set(2.lighting
     4.1.lighting_maps_diffuse_map
+    4.2.lighting_maps_specular_map
 )
 
 configure_file(configuration/root_directory.h.in configuration/root_directory.h)
