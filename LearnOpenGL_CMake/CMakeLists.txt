@@ -35,10 +35,16 @@ set(2.lighting
     4.1.lighting_maps_diffuse_map
 )
 
+configure_file(configuration/root_directory.h.in configuration/root_directory.h)
+include_directories(${CMAKE_BINARY_DIR}/configuration)
 
-add_library(glad src/glad.c)
-list(APPEND LIBS glad)
-set_property(TARGET glad PROPERTY FOLDER "Dependencies")
+add_library(STB_IMAGE src/stb_image.cpp)
+list(APPEND LIBS STB_IMAGE)
+set_property(TARGET STB_IMAGE PROPERTY FOLDER "Dependencies")
+
+add_library(GLAD src/glad.c)
+list(APPEND LIBS GLAD)
+set_property(TARGET GLAD PROPERTY FOLDER "Dependencies")
 
 message("LIBS: ${LIBS}")
 
