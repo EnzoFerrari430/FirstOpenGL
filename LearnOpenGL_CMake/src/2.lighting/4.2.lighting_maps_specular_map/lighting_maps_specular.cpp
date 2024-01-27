@@ -155,7 +155,7 @@ int main()
         //‰÷»æ≤ø∑÷
         glm::vec4 lightColor = glm::vec4(1.0f);
         glm::mat4 view = camera.GetViewMatrix();
-        glm::mat4 projection = glm::perspective(camera.Zoom, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
         glm::vec3 ambient = lightColor * 0.2f;
         glm::vec3 diffuse = lightColor * 0.5f;
         glm::vec3 specular = lightColor;
