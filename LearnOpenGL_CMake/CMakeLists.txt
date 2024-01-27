@@ -34,6 +34,8 @@ set(1.getting_started
 set(2.lighting
     4.1.lighting_maps_diffuse_map
     4.2.lighting_maps_specular_map
+    4.4.lighting_maps_exercise4
+    5.1.lighting_casters_directional
 )
 
 configure_file(configuration/root_directory.h.in configuration/root_directory.h)
@@ -64,23 +66,30 @@ function(create_project_from_sources chapter demo)
     "src/${chapter}/${demo}/*.gs"
     "src/${chapter}/${demo}/*.cs"
     )
-    add_executable(${demo} ${SOURCE})
-    set_property(TARGET ${demo} PROPERTY FOLDER "${chapter}")
-    target_link_libraries(${demo} PUBLIC ${LIBS})
+    if(demo STREQUAL "")
+        SET(replaced "")
+        string(REPLACE "/" "_" replaced ${chapter})
+        set(NAME ${replaced})
+    else()
+        set(NAME "${chapter}__${demo}")
+    endif()
+    add_executable(${NAME} ${SOURCE})
+    set_property(TARGET ${NAME} PROPERTY FOLDER "${chapter}")
+    target_link_libraries(${NAME} PUBLIC ${LIBS})
     if(MSVC)
-        target_compile_options(${demo} PRIVATE /std:c++17 /MP)
-        target_link_options(${demo} PUBLIC /ignore:4099)
+        target_compile_options(${NAME} PRIVATE /std:c++17 /MP)
+        target_link_options(${NAME} PUBLIC /ignore:4099)
     endif(MSVC)
     #…Ë÷√ ‰≥ˆƒø¬º
     if(WIN32)
-        set_target_properties(${demo} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${chapter}")
-        set_target_properties(${demo} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${chapter}/Debug")
+        set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${chapter}")
+        set_target_properties(${NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${chapter}/Debug")
     elseif(UNIX AND NOT APPLE)
-        set_target_properties(${demo} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${chapter}")
+        set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${chapter}")
     elseif(APPLE)
-        set_target_properties(${demo} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${chapter}")
-        set_target_properties(${demo} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_SOURCE_DIR}/bin/${chapter}")
-        set_target_properties(${demo} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/bin/${chapter}")
+        set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${chapter}")
+        set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_SOURCE_DIR}/bin/${chapter}")
+        set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/bin/${chapter}")
     endif(WIN32)
     # copy shader files to build directory
     file(GLOB SHADERS
@@ -95,16 +104,20 @@ function(create_project_from_sources chapter demo)
     foreach(SHADER ${SHADERS})
         if(WIN32)
             # configure_file(${SHADER} "test")
-            add_custom_command(TARGET ${demo} PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SHADER} $<TARGET_FILE_DIR:${demo}>)
+            add_custom_command(TARGET ${NAME} PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SHADER} $<TARGET_FILE_DIR:${NAME}>)
         elseif(UNIX AND NOT APPLE)
             file(COPY ${SHADER} DESTINATION ${CMAKE_SOURCE_DIR}/bin/${chapter})
         elseif(APPLE)
             # create symbolic link for *.vs *.fs *.gs
             get_filename_component(SHADERNAME ${SHADER} NAME)
-            makeLink(${SHADER} ${CMAKE_SOURCE_DIR}/bin/${chapter}/${SHADERNAME} ${demo})
+            makeLink(${SHADER} ${CMAKE_SOURCE_DIR}/bin/${chapter}/${SHADERNAME} ${NAME})
         endif(WIN32)
     endforeach(SHADER)
 
+    # if compiling for visual studio, also use configure file for each project (specifically to set up working directory)
+    if(MSVC)
+        configure_file(${CMAKE_SOURCE_DIR}/configuration/visualstudio.vcxproj.user.in ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.vcxproj.user @ONLY)
+    endif()
 endfunction()
 
 foreach(CHAPTER ${CHAPTERS})
