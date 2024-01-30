@@ -37,6 +37,8 @@ set(2.lighting
     4.4.lighting_maps_exercise4
     5.1.lighting_casters_directional
     5.2.lighting_casters_point
+    5.3.lighting_casters_spot
+    5.4.lighting_casters_spot_soft
 )
 
 configure_file(configuration/root_directory.h.in configuration/root_directory.h)
