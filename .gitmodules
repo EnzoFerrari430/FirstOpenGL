@@ -1,0 +1,4 @@
+[submodule "LearnOpenGL_CMake/vendor/imgui"]
+	path = LearnOpenGL_CMake/vendor/imgui
+	url = https://github.com/EnzoFerrari430/imgui.git
+	branch = HazelStudyDocking
