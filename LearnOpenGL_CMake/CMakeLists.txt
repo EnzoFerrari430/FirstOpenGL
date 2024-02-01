@@ -44,6 +44,8 @@ set(2.lighting
 configure_file(configuration/root_directory.h.in configuration/root_directory.h)
 include_directories(${CMAKE_BINARY_DIR}/configuration)
 
+add_subdirectory(vendor/imgui)
+
 add_library(STB_IMAGE src/stb_image.cpp)
 list(APPEND LIBS STB_IMAGE)
 set_property(TARGET STB_IMAGE PROPERTY FOLDER "Dependencies")
@@ -51,6 +53,13 @@ set_property(TARGET STB_IMAGE PROPERTY FOLDER "Dependencies")
 add_library(GLAD src/glad.c)
 list(APPEND LIBS GLAD)
 set_property(TARGET GLAD PROPERTY FOLDER "Dependencies")
+
+add_library(ImGuiBuild src/ImGuiBuild.cpp)
+list(APPEND LIBS ImGuiBuild)
+set_property(TARGET ImGuiBuild PROPERTY FOLDER "Dependencies")
+target_include_directories(ImGuiBuild PUBLIC ${CMAKE_SOURCE_DIR}/vendor/imgui)
+
+target_link_libraries(ImGuiBuild PUBLIC ImGui)
 
 message("LIBS: ${LIBS}")
 
@@ -79,6 +88,7 @@ function(create_project_from_sources chapter demo)
     add_executable(${NAME} ${SOURCE})
     set_property(TARGET ${NAME} PROPERTY FOLDER "${chapter}")
     target_link_libraries(${NAME} PUBLIC ${LIBS})
+    target_include_directories(${NAME} PUBLIC ${CMAKE_SOURCE_DIR}/vendor/imgui)
     if(MSVC)
         target_compile_options(${NAME} PRIVATE /std:c++17 /MP)
         target_link_options(${NAME} PUBLIC /ignore:4099)

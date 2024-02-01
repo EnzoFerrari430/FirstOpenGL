@@ -1,5 +1,9 @@
 #include <iostream>
 
+#define IMGUI_IMP_API
+#include "backends/imgui_impl_opengl3.h"
+#include "backends/imgui_impl_glfw.h"
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stb_image.h>
@@ -32,6 +36,9 @@ float lastFrame = 0.0f;
 // lighting
 glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
+//ImGui
+bool show_demo_window = true;
+
 int main()
 {
     glfwInit();
@@ -47,7 +54,7 @@ int main()
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
     
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -137,6 +144,16 @@ int main()
     lightingShader.setInt("material.specular", 1);
     lightingShader.setInt("material.emission", 2);
 
+    //ImGui
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init();
+
 
     while (!glfwWindowShouldClose(window))
     {
@@ -195,9 +212,31 @@ int main()
         glBindVertexArray(cubeVAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        if (show_demo_window)
+            ImGui::ShowDemoWindow(&show_demo_window);
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            GLFWwindow* backup_current_context = glfwGetCurrentContext();
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+            glfwMakeContextCurrent(backup_current_context);
+        }
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
 
     glDeleteTextures(1, &diffuseMap);
     glDeleteTextures(1, &specularMap);
