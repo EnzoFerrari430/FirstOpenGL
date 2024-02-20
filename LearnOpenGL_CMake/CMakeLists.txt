@@ -12,13 +12,13 @@ set(CMAKE_CXX_EXTENSIONS ON)
 #“¿¿µø‚¬∑æ∂
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib)
 
-#“¿¿µø‚ OpenGL GLFW
-set(LIBS opengl32 glfw3)
+#“¿¿µø‚ OpenGL GLFW assimp
+set(LIBS opengl32 glfw3 assimp-vc143-mt)
 
 set(CHAPTERS
     1.getting_started
     2.lighting
-    #3.model_loading
+    3.model_loading
     #4.advanced_opengl
     #5.advanced_lighting
     #6.pbr
@@ -40,6 +40,10 @@ set(2.lighting
     5.3.lighting_casters_spot
     5.4.lighting_casters_spot_soft
     6.multiple_lights
+)
+
+set(3.model_loading
+    1.model_loading
 )
 
 configure_file(configuration/root_directory.h.in configuration/root_directory.h)
@@ -115,10 +119,13 @@ function(create_project_from_sources chapter demo)
              "src/${chapter}/${demo}/*.gs"
              "src/${chapter}/${demo}/*.cs"
     )
+    # copy dlls
+    file(GLOB DLLS "dlls/*.dll")
     foreach(SHADER ${SHADERS})
         if(WIN32)
             # configure_file(${SHADER} "test")
             add_custom_command(TARGET ${NAME} PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SHADER} $<TARGET_FILE_DIR:${NAME}>)
+            add_custom_command(TARGET ${NAME} PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${DLLS} $<TARGET_FILE_DIR:${NAME}>)
         elseif(UNIX AND NOT APPLE)
             file(COPY ${SHADER} DESTINATION ${CMAKE_SOURCE_DIR}/bin/${chapter})
         elseif(APPLE)
