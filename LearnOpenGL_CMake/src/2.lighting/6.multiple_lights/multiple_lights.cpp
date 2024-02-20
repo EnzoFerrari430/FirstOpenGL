@@ -42,8 +42,6 @@ struct PointLight
 
 struct SpotLight
 {
-    glm::vec3 position;
-    glm::vec3 direction;
     glm::vec3 ambient;
     glm::vec3 diffuse;
     glm::vec3 specular;
@@ -249,8 +247,6 @@ int main()
     pointLights[3].quadratic = 0.032f;
 
     SpotLight spotLight;
-    spotLight.position = camera.Position;
-    spotLight.direction = camera.Front;
     spotLight.ambient = glm::vec3(0.0f);
     spotLight.diffuse = glm::vec3(0.8f, 0.8f, 0.0f);
     spotLight.specular = glm::vec3(0.8f, 0.8f, 0.0f);
@@ -357,8 +353,8 @@ int main()
         lightingShader.setFloat("pointLights[3].quadratic", pointLights[3].quadratic);
 
         //spot light
-        lightingShader.setVec3("spotLight.position", spotLight.position);
-        lightingShader.setVec3("spotLight.direction", spotLight.direction);
+        lightingShader.setVec3("spotLight.position", camera.Position);
+        lightingShader.setVec3("spotLight.direction", camera.Front);
         lightingShader.setFloat("spotLight.cutOff", glm::cos(glm::radians(spotLight.cutOff)));
         lightingShader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(spotLight.outerCutOff)));
         lightingShader.setVec3("spotLight.ambient", spotLight.ambient);
@@ -388,10 +384,31 @@ int main()
             ImGui::ShowDemoWindow(&show_demo_window);
 
         ImGui::Begin("Debug");
-        ImGui::Text("SpotLight");
-        ImGui::SliderFloat3("Ambient", &spotLight.ambient.x, 0.0f, 1.0f);
-        ImGui::SliderFloat3("Diffuse", &spotLight.diffuse.x, 0.0f, 1.0f);
-        ImGui::SliderFloat3("Specular", &spotLight.specular.x, 0.0f, 1.0f);
+        ImGui::Text("Directional Light");
+        ImGui::SliderFloat3("Directional Light Direction", &dirLight.direction.x, 0.0f, 1.0f);
+        ImGui::SliderFloat3("Directional Light Ambient", &dirLight.ambient.x, 0.0f, 1.0f);
+        ImGui::SliderFloat3("Directional Light Diffuse", &dirLight.diffuse.x, 0.0f, 1.0f);
+        ImGui::SliderFloat3("Directional Light Specular", &dirLight.specular.x, 0.0f, 1.0f);
+        ImGui::Text("Point Light0");
+        ImGui::SliderFloat3("Point Light0 Ambient",  &pointLights[0].ambient.x, 0.0f, 1.0f);
+        ImGui::SliderFloat3("Point Light0 Diffuse",  &pointLights[0].diffuse.x, 0.0f, 1.0f);
+        ImGui::SliderFloat3("Point Light0 Specular", &pointLights[0].specular.x, 0.0f, 1.0f);
+        ImGui::Text("Point Light1");
+        ImGui::SliderFloat3("Point Light1 Ambient",  &pointLights[1].ambient.x, 0.0f, 1.0f);
+        ImGui::SliderFloat3("Point Light1 Diffuse",  &pointLights[1].diffuse.x, 0.0f, 1.0f);
+        ImGui::SliderFloat3("Point Light1 Specular", &pointLights[1].specular.x, 0.0f, 1.0f);
+        ImGui::Text("Point Light2");
+        ImGui::SliderFloat3("Point Light2 Ambient",  &pointLights[2].ambient.x, 0.0f, 1.0f);
+        ImGui::SliderFloat3("Point Light2 Diffuse",  &pointLights[2].diffuse.x, 0.0f, 1.0f);
+        ImGui::SliderFloat3("Point Light2 Specular", &pointLights[2].specular.x, 0.0f, 1.0f);
+        ImGui::Text("Point Light3");
+        ImGui::SliderFloat3("Point Light3 Ambient",  &pointLights[3].ambient.x, 0.0f, 1.0f);
+        ImGui::SliderFloat3("Point Light3 Diffuse",  &pointLights[3].diffuse.x, 0.0f, 1.0f);
+        ImGui::SliderFloat3("Point Light3 Specular", &pointLights[3].specular.x, 0.0f, 1.0f);
+        ImGui::Text("Spot Light");
+        ImGui::SliderFloat3("Spot Ambient", &spotLight.ambient.x, 0.0f, 1.0f);
+        ImGui::SliderFloat3("Spot Diffuse", &spotLight.diffuse.x, 0.0f, 1.0f);
+        ImGui::SliderFloat3("Spot Specular", &spotLight.specular.x, 0.0f, 1.0f);
         ImGui::End();
 
         ImGui::Render();
@@ -455,6 +472,13 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 {
     float xpos = static_cast<float>(xposIn);
     float ypos = static_cast<float>(yposIn);
+
+    if (firstMouse)
+    {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
 
     float xoffset = xpos - lastX;
     float yoffset = lastY - ypos;
