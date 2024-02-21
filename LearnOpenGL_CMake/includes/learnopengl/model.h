@@ -175,7 +175,7 @@ private:
                 // ¼ÓÔØÎÆÀí
                 Texture texture;
                 texture.id = TextureFromFile(str.C_Str(), this->directory);
-                texture.type = type;
+                texture.type = typeName;
                 texture.path = str.C_Str();
                 textures.push_back(texture);
                 textures_loaded.push_back(texture);
