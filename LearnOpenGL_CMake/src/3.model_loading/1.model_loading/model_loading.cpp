@@ -65,6 +65,8 @@ int main()
 
     stbi_set_flip_vertically_on_load(true);
 
+    // shader
+    Shader ourShader("1.model_loading.vs", "1.model_loading.fs");
 
     // load models
     Model ourModel(FileSystem::getPath("resources/objects/backpack/backpack.obj"));
@@ -82,6 +84,19 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //render
+        ourShader.use();
+
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 view = camera.GetViewMatrix();
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+        ourShader.setMat4("projection", projection);
+        ourShader.setMat4("view", view);
+        ourShader.setMat4("model", model);
+
+
+        ourModel.Draw(ourShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -131,6 +146,9 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 
     float xoffset = xpos - lastX;
     float yoffset = lastY - ypos;
+
+    lastX = xpos;
+    lastY = ypos;
 
     if (cameraViewMove)
         camera.ProcessMouseMovement(xoffset, yoffset);
