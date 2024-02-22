@@ -19,7 +19,7 @@ set(CHAPTERS
     1.getting_started
     2.lighting
     3.model_loading
-    #4.advanced_opengl
+    4.advanced_opengl
     #5.advanced_lighting
     #6.pbr
     #7.in_practice
@@ -44,6 +44,10 @@ set(2.lighting
 
 set(3.model_loading
     1.model_loading
+)
+
+set(4.advanced_opengl
+    1.1.depth_testing
 )
 
 configure_file(configuration/root_directory.h.in configuration/root_directory.h)
