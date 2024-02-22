@@ -92,6 +92,7 @@ private:
     unsigned int VBO, EBO;
 
     // 初始化缓冲对象 VAO VBO EBO等
+    // bind EBO之前一定要先bind VAO！！！  详见Q: 关于VAO和EBO解绑定的坑
     void setupMesh()
     {
         glGenVertexArrays(1, &VAO);
