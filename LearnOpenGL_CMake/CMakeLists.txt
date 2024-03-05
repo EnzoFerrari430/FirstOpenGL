@@ -24,6 +24,7 @@ set(CHAPTERS
     #6.pbr
     #7.in_practice
     #8.GUEST_ARTICLES
+    9.test_demos
 )
 
 set(1.getting_started
@@ -48,6 +49,11 @@ set(3.model_loading
 
 set(4.advanced_opengl
     1.1.depth_testing
+    2.1.stencil_testing
+)
+
+set(9.test_demos
+    1.1.test_depth
 )
 
 configure_file(configuration/root_directory.h.in configuration/root_directory.h)
