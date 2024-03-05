@@ -153,7 +153,7 @@ int main()
     unsigned int floorTexture = loadTexture(FileSystem::getPath("resources/textures/metal.png").c_str());
 
     shader.use();
-    shader.setInt("exture1", 0);
+    shader.setInt("texture1", 0);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -197,6 +197,11 @@ int main()
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+
+    glDeleteVertexArrays(1, &cubeVAO);
+    glDeleteVertexArrays(1, &planeVAO);
+    glDeleteBuffers(1, &cubeVBO);
+    glDeleteBuffers(1, &planeVBO);
 
     glfwTerminate();
 
