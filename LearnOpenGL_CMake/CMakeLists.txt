@@ -50,10 +50,15 @@ set(3.model_loading
 set(4.advanced_opengl
     1.1.depth_testing
     2.1.stencil_testing
+    3.1.blending_discard
+    3.2.blending_sort
+    4.1.face_culling
+    5.1.framebuffers
 )
 
 set(9.test_demos
     1.1.test_depth
+    1.2.test_OIT_blend
 )
 
 configure_file(configuration/root_directory.h.in configuration/root_directory.h)
