@@ -72,6 +72,12 @@ public:
         glDeleteShader(fragment);
     }
 
+    Shader::~Shader()
+    {
+        std::cout << "Delete Shader Program: " << ID << std::endl;
+        glDeleteProgram(ID);
+    }
+
     void use() const
     {
         glUseProgram(ID);

@@ -272,6 +272,19 @@ int main()
         glfwPollEvents();
     }
 
+    glDeleteVertexArrays(1, &cubeVAO);
+    glDeleteVertexArrays(1, &planeVAO);
+    glDeleteVertexArrays(1, &quadVAO);
+    glDeleteBuffers(1, &cubeVBO);
+    glDeleteBuffers(1, &planeVBO);
+    glDeleteBuffers(1, &quadVBO);
+
+    glDeleteTextures(1, &cubeTexture);
+    glDeleteTextures(1, &floorTexture);
+    
+    glDeleteRenderbuffers(1, &rbo);
+    glDeleteFramebuffers(1, &fbo);
+
     glfwTerminate();
 
     return 0;
