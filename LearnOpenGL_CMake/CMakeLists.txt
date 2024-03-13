@@ -54,6 +54,7 @@ set(4.advanced_opengl
     3.2.blending_sort
     4.1.face_culling
     5.1.framebuffers
+    5.2.framebuffers_exercise1
 )
 
 set(9.test_demos
@@ -69,6 +70,10 @@ add_subdirectory(vendor/imgui)
 add_library(STB_IMAGE src/stb_image.cpp)
 list(APPEND LIBS STB_IMAGE)
 set_property(TARGET STB_IMAGE PROPERTY FOLDER "Dependencies")
+
+add_library(STB_IMAGE_WRITE src/stb_image_write.cpp)
+list(APPEND LIBS STB_IMAGE_WRITE)
+set_property(TARGET STB_IMAGE_WRITE PROPERTY FOLDER "Dependencies")
 
 add_library(GLAD src/glad.c)
 list(APPEND LIBS GLAD)
