@@ -281,6 +281,7 @@ int main()
 
     glDeleteTextures(1, &cubeTexture);
     glDeleteTextures(1, &floorTexture);
+    glDeleteTextures(1, &texColorBuffer);
     
     glDeleteRenderbuffers(1, &rbo);
     glDeleteFramebuffers(1, &fbo);
