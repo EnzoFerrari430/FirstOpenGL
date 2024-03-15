@@ -55,6 +55,8 @@ set(4.advanced_opengl
     4.1.face_culling
     5.1.framebuffers
     5.2.framebuffers_exercise1
+    6.1.cubemaps_skybox
+    6.2.cubemaps_environment_mapping
 )
 
 set(9.test_demos
