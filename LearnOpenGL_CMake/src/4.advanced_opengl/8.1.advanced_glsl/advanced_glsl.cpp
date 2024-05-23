@@ -33,8 +33,8 @@ int main()
 {
     glfwInit();
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "LearnOpenGL", nullptr, nullptr);
@@ -144,10 +144,12 @@ int main()
     glBindVertexArray(0);
 
     stbi_set_flip_vertically_on_load(true);
-    unsigned int textureID = loadTexture(FileSystem::getPath("resources/textures/container2.png").c_str());
+    unsigned int frontTexture = loadTexture(FileSystem::getPath("resources/textures/brickwall.jpg").c_str());
+    unsigned int backTexture = loadTexture(FileSystem::getPath("resources/textures/matrix.jpg").c_str());
 
     shaderGreen.use();
-    shaderGreen.setInt("texture1", 0);
+    shaderGreen.setInt("frontTexture", 0);
+    shaderGreen.setInt("backTexture", 1);
 
 
     while (!glfwWindowShouldClose(window))
@@ -175,7 +177,9 @@ int main()
         shaderGreen.setMat4("projection", projection);
 
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, textureID);
+        glBindTexture(GL_TEXTURE_2D, frontTexture);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, backTexture);
 
         //for (int i = 0; i < 10; ++i)
         //{
