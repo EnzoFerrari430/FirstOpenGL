@@ -58,7 +58,7 @@ int main()
     }
 
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_PROGRAM_POINT_SIZE);
+    //glEnable(GL_PROGRAM_POINT_SIZE);
 
     //float box[2];
     //glGetFloatv(GL_POINT_SIZE_RANGE, box);
@@ -188,7 +188,7 @@ int main()
         //}
 
         shaderGreen.setMat4("model", model);
-        glDrawArrays(GL_POINTS, 0, 6);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
 
         glfwPollEvents();
