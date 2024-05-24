@@ -41,6 +41,14 @@ public:
             fShaderFile.close();
             vertexCode = vShaderStream.str();
             fragmentCode = fShaderStream.str();
+            if (geometryPath != nullptr)
+            {
+                gShaderFile.open(geometryPath, std::ios::in);
+                std::stringstream gShaderStream;
+                gShaderStream << gShaderFile.rdbuf();
+                gShaderFile.close();
+                geometryCode = gShaderStream.str();
+            }
         }
         catch (std::ifstream::failure& e)
         {
