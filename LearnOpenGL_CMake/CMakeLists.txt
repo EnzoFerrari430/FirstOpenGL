@@ -59,6 +59,7 @@ set(4.advanced_opengl
     6.2.cubemaps_environment_mapping
     8.1.advanced_glsl
     9.1.geometry_shader_houses
+    9.2.geometry_shader_exploding
 )
 
 set(9.test_demos
