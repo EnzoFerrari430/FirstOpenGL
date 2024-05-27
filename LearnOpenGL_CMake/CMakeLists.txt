@@ -60,6 +60,7 @@ set(4.advanced_opengl
     8.1.advanced_glsl
     9.1.geometry_shader_houses
     9.2.geometry_shader_exploding
+    9.3.geometry_shader_normals
 )
 
 set(9.test_demos
