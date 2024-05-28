@@ -8,7 +8,7 @@
 int SCREEN_WIDTH = 800;
 int SCREEN_HEIGHT = 600;
 
-#define QuadsUniformBlockSize 1024
+#define QuadsUniformBlockSize 100
 
 int main()
 {
@@ -83,15 +83,25 @@ int main()
         }
     }
 
-    shader.use();
-    for (unsigned int i = 0; i < 100; i++)
-    {
-        std::stringstream ss;
-        std::string index;
-        ss << i;
-        index = ss.str();
-        shader.setVec2(("offsets[" + index + "]").c_str(), translations[i]);
-    }
+    unsigned int instanceVBO;
+    glGenBuffers(1, &instanceVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * QuadsUniformBlockSize, translations, GL_STATIC_DRAW);
+
+    glBindVertexArray(cubeVAO);
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (const void*)0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    /*
+    void glVertexAttribDivisor(GLuint index, GLuint divisor);
+    修改实例化渲染过程中通用顶点属性前进的速率
+
+    index: 指定顶点属性索引
+    divisor: 指定在索引处的属性更新需要传递的实例数。
+    */
+    // 这里每渲染一次 就更新获取下一个aOffset值
+    // 如果divisor为10的话，就表示每渲染10个quad才会更新一次aOffset值 导致10个quad画在了一个地方 看起来就只渲染了底部10个quad
+    glVertexAttribDivisor(2, 1);
 
     while (!glfwWindowShouldClose(window))
     {
