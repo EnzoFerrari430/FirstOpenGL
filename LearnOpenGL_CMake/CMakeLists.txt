@@ -62,6 +62,7 @@ set(4.advanced_opengl
     9.2.geometry_shader_exploding
     9.3.geometry_shader_normals
     10.1.instancing_quads
+    10.2.asteroids
 )
 
 set(9.test_demos
