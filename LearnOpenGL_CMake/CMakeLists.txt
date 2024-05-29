@@ -63,6 +63,7 @@ set(4.advanced_opengl
     9.3.geometry_shader_normals
     10.1.instancing_quads
     10.2.asteroids
+    10.3.asteroids_instanced
 )
 
 set(9.test_demos
