@@ -2,17 +2,17 @@ cmake_minimum_required(VERSION 3.15)
 
 project(LearnOpenGL)
 
-#¿ÉÒÔÊ¹ÓÃÎÄ¼ş¼Ğ×éÖ¯Ä¿±ê
+#å¯ä»¥ä½¿ç”¨æ–‡ä»¶å¤¹ç»„ç»‡ç›®æ ‡
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set(CMAKE_CXX_STANDARD 17) # this does nothing for MSVC, use target_compile_options below
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)
 
-#ÒÀÀµ¿âÂ·¾¶
+#ä¾èµ–åº“è·¯å¾„
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib)
 
-#ÒÀÀµ¿â OpenGL GLFW assimp
+#ä¾èµ–åº“ OpenGL GLFW assimp
 set(LIBS opengl32 glfw3 assimp-vc143-mt)
 
 set(CHAPTERS
@@ -64,6 +64,8 @@ set(4.advanced_opengl
     10.1.instancing_quads
     10.2.asteroids
     10.3.asteroids_instanced
+    11.1.anti_aliasing_msaa
+    11.2.anti_aliasing_offscreen
 )
 
 set(9.test_demos
@@ -127,7 +129,7 @@ function(create_project_from_sources chapter demo)
         target_compile_options(${NAME} PRIVATE /std:c++17 /MP)
         target_link_options(${NAME} PUBLIC /ignore:4099)
     endif(MSVC)
-    #ÉèÖÃÊä³öÄ¿Â¼
+    #ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿Â¼
     if(WIN32)
         set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${chapter}")
         set_target_properties(${NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${chapter}/Debug")
