@@ -32,6 +32,9 @@ bool cameraViewMove = false;
 bool gamma = false;
 bool gammaKeyPressed = false;
 
+bool shaderGamma = false;
+bool shaderGammaKeyPressed = false;
+
 int main()
 {
     glfwInit();
@@ -60,6 +63,11 @@ int main()
     }
 
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    if(gamma)
+        glEnable(GL_FRAMEBUFFER_SRGB);
+
     Shader shader("2.gamma_correction.vs", "2.gamma_correction.fs");
     Shader lightShader("2.light.vs", "2.light.fs");
 
@@ -209,13 +217,16 @@ int main()
         shader.setMat4("model", glm::mat4(1.0f));
 
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, floorTexture);
+        glBindTexture(GL_TEXTURE_2D, shaderGamma ? floorTextureGammaCorrected : floorTexture);
 
         shader.setVec3Array("lightPositions", 4, lightPositions);
         shader.setVec3Array("lightColors", 4, lightColors);
         shader.setVec3("viewPos", camera.Position);
+        shader.setBool("applyGamma", shaderGamma);
 
         glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        std::cout << (shaderGamma ? "Gamma enabled" : "Gamma disabled") << std::endl;
 
         glfwPollEvents();
         glfwSwapBuffers(window);
@@ -254,6 +265,16 @@ void processInput(GLFWwindow* window)
     else if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE)
     {
         gammaKeyPressed = false;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS && !shaderGammaKeyPressed)
+    {
+        shaderGamma = !shaderGamma;
+        shaderGammaKeyPressed = true;
+    }
+    else if (glfwGetKey(window, GLFW_KEY_G) == GLFW_RELEASE)
+    {
+        shaderGammaKeyPressed = false;
     }
 }
 
@@ -299,16 +320,24 @@ unsigned int loadTexture(const char* path, bool gammaCorrection)
     unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
     if (data)
     {
-        GLenum format;
+        GLenum internalFormat, dataFormat;
         if (nrComponents == 1)
-            format = GL_RED;
+        {
+            internalFormat = dataFormat = GL_RED;
+        }
         else if (nrComponents == 3)
-            format = GL_RGB;
+        {
+            internalFormat = gammaCorrection ? GL_SRGB : GL_RGB;
+            dataFormat = GL_RGB;
+        }
         else if (nrComponents == 4)
-            format = GL_RGBA;
+        {
+            internalFormat = gammaCorrection ? GL_SRGB_ALPHA : GL_RGBA;
+            dataFormat = GL_RGBA;
+        }
 
         glBindTexture(GL_TEXTURE_2D, texture);
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, dataFormat, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
