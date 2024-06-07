@@ -180,6 +180,12 @@ public:
         glUniformMatrix4fv(location, 1, GL_FALSE, &mat[0][0]);
     }
 
+    void setVec3Array(const std::string& name, int count, const glm::vec3* value)
+    {
+        int location = getUniformLocation(name);
+        glUniform3fv(location, count, &value[0][0]);
+    }
+
 private:
     // utility function for checking shader compilation/link errors.
     void checkCompileErrors(GLuint shader, const std::string& type)

@@ -70,6 +70,7 @@ set(4.advanced_opengl
 
 set(5.advanced_lighting
     1.advanced_lighting
+    2.gamma_correction
 )
 
 set(9.test_demos
