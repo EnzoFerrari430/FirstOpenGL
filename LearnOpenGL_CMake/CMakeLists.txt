@@ -71,6 +71,7 @@ set(4.advanced_opengl
 set(5.advanced_lighting
     1.advanced_lighting
     2.gamma_correction
+    3.1.1.shadow_mapping_depth
 )
 
 set(9.test_demos
