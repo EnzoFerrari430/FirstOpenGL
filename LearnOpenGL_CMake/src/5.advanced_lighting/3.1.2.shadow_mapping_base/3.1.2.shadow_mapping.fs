@@ -31,7 +31,10 @@ float ShadowCalculation(vec4 fragPosLightSpace)
     // 当前片段在光的位置视野下的深度
     float currentDepth = projCoords.z;
 
-    float shadow = currentDepth > closestDepth ? 1.0 : 0.0;
+    // 使用偏移量，采样点可以比表面深度值更小, 解决阴影失真问题
+    // 但是会产生另一个问题 阴影悬浮
+    float bias = 0.05;
+    float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
 
     return shadow;
 }
