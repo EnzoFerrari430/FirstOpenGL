@@ -165,7 +165,9 @@ int main()
         glClear(GL_DEPTH_BUFFER_BIT);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, woodTexture);
+        glCullFace(GL_FRONT);
         renderScene(simpleDepthShader);
+        glCullFace(GL_BACK);
 
         // Õý³£äÖÈ¾
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
