@@ -36,6 +36,10 @@ float ShadowCalculation(vec4 fragPosLightSpace)
     float bias = 0.005;
     float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
 
+    // 设置超出光视锥外的阴影深度设置为0
+    if(projCoords.z > 1.0)
+        shadow = 0.0;
+
     return shadow;
 }
 
@@ -43,10 +47,10 @@ void main()
 {
     vec3 color = texture(diffuseTexture, fs_in.TexCoords).rgb;
     vec3 normal = normalize(fs_in.Normal);
-    vec3 lightColor = vec3(1.0);
+    vec3 lightColor = vec3(0.3);
 
     // Ambient
-    vec3 ambient = 0.15 * color;
+    vec3 ambient = 0.3 * color;
     // Diffuse
     vec3 lightDir = normalize(lightPos - fs_in.FragPos);
     float diff = max(dot(lightDir, normal), 0.0);
