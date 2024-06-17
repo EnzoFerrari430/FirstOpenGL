@@ -25,20 +25,34 @@ float ShadowCalculation(vec4 fragPosLightSpace)
     // xy可以对应深度贴图的xy坐标，z可以对应深度贴图的深度值
     projCoords = projCoords * 0.5 + 0.5;
 
-    // 获取光的位置视野下最近的深度
-    float closestDepth = texture(shadowMap, projCoords.xy).r;
+    // 设置超出光视锥外的阴影深度设置为0
+    if(projCoords.z > 1.0)
+        return 0.0;
 
     // 当前片段在光的位置视野下的深度
     float currentDepth = projCoords.z;
 
-    // 使用偏移量，采样点可以比表面深度值更小, 解决阴影失真问题
-    // 但是会产生另一个问题 阴影悬浮
+    //// 获取光的位置视野下最近的深度
+    //float closestDepth = texture(shadowMap, projCoords.xy).r;
+    //
+    //// 使用偏移量，采样点可以比表面深度值更小, 解决阴影失真问题
+    //// 但是会产生另一个问题 阴影悬浮
     float bias = 0.005;
-    float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
+    //float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
 
-    // 设置超出光视锥外的阴影深度设置为0
-    if(projCoords.z > 1.0)
-        shadow = 0.0;
+    //PCF方法计算阴影时不是考虑单个采样点，而是在一定范围内进行多重采样，这样可以让阴影的边缘不那么锯齿
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / textureSize(shadowMap, 0); //纹理实际大小在0-1坐标映射内的大小
+    for(int x = -1; x <= 1; ++x)
+    {
+        for(int y = -1; y <= 1; ++y)
+        {
+            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+            shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+        }
+    }
+    shadow /= 9.0;
+
 
     return shadow;
 }
