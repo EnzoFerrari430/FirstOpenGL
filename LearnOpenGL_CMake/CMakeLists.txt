@@ -73,11 +73,13 @@ set(5.advanced_lighting
     2.gamma_correction
     3.1.1.shadow_mapping_depth
     3.1.2.shadow_mapping_base
+    3.2.1.point_shadows
 )
 
 set(9.test_demos
     1.1.test_depth
     1.2.test_OIT_blend
+    1.3.test_tga_file
 )
 
 configure_file(configuration/root_directory.h.in configuration/root_directory.h)
