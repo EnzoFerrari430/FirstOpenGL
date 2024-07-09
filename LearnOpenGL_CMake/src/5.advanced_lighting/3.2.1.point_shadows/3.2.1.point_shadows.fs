@@ -32,7 +32,8 @@ float ShadowCalculation(vec3 fragPos)
     float bias = 0.05;
     float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
 
-    return shadow;
+    //return shadow;
+    return closestDepth;
 }
 
 void main()
@@ -57,8 +58,10 @@ void main()
     spec = pow(max(dot(normal, halfwayDir), 0.0), 64.0);
     vec3 specular = spec * lightColor;
 
-    float shadow = shadows ? ShadowCalculation(fs_in.FragPos) : 0.0;
-    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * color;
+    //float shadow = shadows ? ShadowCalculation(fs_in.FragPos) : 0.0;
+    float closestDepth = ShadowCalculation(fs_in.FragPos);
+    //vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * color;
 
-    FragColor = vec4(lighting, 1.0);
+    //FragColor = vec4(lighting, 1.0);
+    FragColor = vec4(vec3(closestDepth / far_plane), 1.0);
 }
