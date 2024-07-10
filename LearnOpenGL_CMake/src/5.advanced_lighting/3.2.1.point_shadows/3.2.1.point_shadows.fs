@@ -18,38 +18,37 @@ uniform vec3 viewPos;
 uniform float far_plane;
 uniform bool shadows;
 
+vec3 sampleOffsetDirections[20] = vec3[]
+(
+    vec3(1, 1, -1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1),
+    vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+    vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
+    vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
+    vec3(0, 1, -1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
+);
 
 float ShadowCalculation(vec3 fragPos)
 {
     vec3 fragToLight = fragPos - lightPos;
 
-    //float closestDepth = texture(depthMap, fragToLight).r;
-
-    //closestDepth *= far_plane;
-
     float currentDepth = length(fragToLight);
 
     float shadow = 0.0;
-    float bias = 0.05;
-    float samples = 4.0;
-    float offset = 0.1;
-    for(float x = -offset; x < offset; x += offset/(samples * 0.5))
+    float bias = 0.15;
+    int samples = 20;
+    float viewDistance = length(viewPos - fragPos);
+    //float diskRadius = 0.05;
+    float diskRadius = (1.0 + (viewDistance / far_plane)) / far_plane;
+    for(int i = 0; i < samples; ++i)
     {
-        for(float y = -offset; y < offset; y += offset/(samples * 0.5))
+        float closestDepth = texture(depthMap, fragToLight + sampleOffsetDirections[i] * diskRadius).r;
+        closestDepth *= far_plane;  // Undo mapping [0-1]
+        if(currentDepth - bias > closestDepth)
         {
-            for(float z = -offset; z < offset; z += offset/(samples * 0.5))
-            {
-                float closestDepth = texture(depthMap, fragToLight + vec3(x, y, z)).r;
-                closestDepth *= far_plane;  // Undo mapping [0-1]
-                if(currentDepth - bias > closestDepth)
-                {
-                    shadow += 1.0;
-                }
-            }
+            shadow += 1.0;
         }
     }
-    //float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
-    shadow /= (samples * samples * samples);
+    shadow /= float(samples);
 
     return shadow;
 }
