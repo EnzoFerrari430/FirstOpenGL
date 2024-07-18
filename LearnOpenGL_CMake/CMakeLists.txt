@@ -75,6 +75,7 @@ set(5.advanced_lighting
     3.1.2.shadow_mapping_base
     3.2.1.point_shadows
     4.normal_mapping
+    5.1.parallax_mapping
 )
 
 set(9.test_demos
