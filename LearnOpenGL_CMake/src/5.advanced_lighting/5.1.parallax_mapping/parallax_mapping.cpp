@@ -198,6 +198,8 @@ int main()
         ImGui::Text("light");
         ImGui::DragFloat3("lightPos", &lightPos.x, 0.1f, -5.0f, 5.0f);
 
+        ImGui::DragFloat3("cameraPos", &camera.Position.x, 0.1f, -5.0f, 5.0f);
+
 
         // show Texture Images
         ImGui::Image(ImTextureID(diffuseMap), ImVec2(200, 200));
