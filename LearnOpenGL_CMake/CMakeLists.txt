@@ -80,6 +80,7 @@ set(5.advanced_lighting
     5.3.parallax_occlusion_mapping
     6.hdr
     7.bloom
+    8.1.deferred_shading
 )
 
 set(9.test_demos
